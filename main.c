@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "color.h"
+#include "main_menu.h"
 
 #define CLEAR_SCREEN_ANSI "\e[1;1H\e[2J"
 
@@ -9,9 +10,9 @@ void clearScreen() {
 }
 
 void adminMenu();  // 声明adminMenu函数
-void customerMenu();  // 声明customerMenu函数
+void customerMenu();  // 声明customerMenu函数\
 
-int main() {
+void mainMenu() {
     int choice;
 
     while(1) {
@@ -33,11 +34,14 @@ int main() {
                 break;
             case 3:
                 printf(YEL "退出程序\n" RESET);
-                return 0;
+                return;
             default:
                 printf(RED "无效的选项，请重新选择\n" RESET);
         }
     }
+}
 
+int main() {
+    mainMenu();
     return 0;
 }

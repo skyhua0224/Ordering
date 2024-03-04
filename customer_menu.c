@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "order.h"
 #include "color.h"
+#include "order_info.h" 
 
 
 void inputTableNumber() {
     // 在这里实现输入桌台人数功能
 }
-
-void placeOrder();
 
 void payment() {
     // 在这里实现支付功能
@@ -53,11 +53,5 @@ void customerMenu() {
         peopleNumber = peopleNumber <= 4 ? peopleNumber + 8 : 12;
     }
 
-    // 在这里，我们将桌号和用餐人数保存到order_info.txt文件中
-    FILE *orderInfoFile = fopen("order_info.txt", "a");
-    fprintf(orderInfoFile, "%d %d", tableNumber, peopleNumber);
-    fclose(orderInfoFile);
-
-    // 然后，我们可以调用placeOrder函数来让用户点菜
-    placeOrder();
+    placeOrder(tableNumber, peopleNumber);
 }

@@ -4,6 +4,8 @@
 #include "dish.h"
 #include "color.h"
 #include <string.h>
+#include "order_info.h"
+#include "main_menu.h"
 
 void addOrder() {
     // 在这里实现加单功能
@@ -12,52 +14,27 @@ void addOrder() {
 void cancelOrder() {
     // 在这里实现撤单功能
 }
-
-void checkout(int orderCount, double totalAmount) {
-    printf("\e[1;1H\e[2J");
-    printf(GRN "已下单！您已点了%d道菜，目前的金额为%.2lf元\n" RESET, orderCount, totalAmount);
-
-    while (1) {
-        printf("\n********** 选项 **********\n");
-        printf("1. 加菜\n");
-        printf("2. 查看餐品状态\n");
-        printf("3. 去支付\n");
-        printf("请输入选项的编号（输入0退出）：");
-
-        int choice;
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 0:
-                return;
-            case 1:
-                placeOrder();
-                return;
-            case 2:
-                // 在这里实现查看餐品状态的功能
-                break;
-            case 3:
-                // 在这里实现去支付的功能
-                return;
-            default:
-                printf(RED "无效的选项，请重新选择\n" RESET);
-                break;
-        }
-    }
-}
-
-void placeOrder() {
+void placeOrder(int tableNumber, int peopleNumber) {
     // 首先，我们需要从dish_info.txt文件中加载菜品信息
     loadDishes("dish_info.txt");
 
     // 从order_info.txt文件中加载订单信息
-    int tableNumber = 0;  // 在这里声明tableNumber变量
-    int peopleNumber = 0;  // 在这里声明peopleNumber变量
     int orderCount = 0;  // 在这里声明orderCount变量
     double totalAmount = 0;  // 在这里声明totalAmount变量
+    int currentTableNumber = 0;  // 在这里声明currentTableNumber变量
+    int currentPeopleNumber = 0;  // 在这里声明currentPeopleNumber变量
+    int currentOrderCount = 0;  // 在这里声明currentOrderCount变量
+    double currentTotalAmount = 0;  // 在这里声明currentTotalAmount变量
     FILE *orderInfoFile = fopen("order_info.txt", "r");
     if (orderInfoFile != NULL) {
-        fscanf(orderInfoFile, "%d %d %d %lf", &tableNumber, &peopleNumber, &orderCount, &totalAmount);
+        while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount) == 4) {
+            if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) {
+                // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
+                checkout(currentOrderCount, currentTotalAmount);
+                fclose(orderInfoFile);
+                return;
+            }
+        }
         fclose(orderInfoFile);
     }
 
@@ -84,12 +61,11 @@ void placeOrder() {
 
         if (categoryChoice == 0) {
             // 在下单时，将订单信息保存到order_info.txt文件中
-            orderInfoFile = fopen("order_info.txt", "w");
-            fprintf(orderInfoFile, "%d %d %d %.2lf", tableNumber, peopleNumber, orderCount, totalAmount);
+            orderInfoFile = fopen("order_info.txt", "a");  // 使用"a"模式打开文件，以便在文件末尾添加新的订单信息
+            fprintf(orderInfoFile, "\n%d %d %d %.2lf", tableNumber, peopleNumber, orderCount, totalAmount);  // 在新的一行中写入订单信息
             fclose(orderInfoFile);
 
-            checkout(orderCount, totalAmount);  // 当用户输入0时，调用checkout函数进行下单
-            break;
+            checkout(orderCount, totalAmount);
         }
 
         if (categoryChoice == -1) {
@@ -147,6 +123,40 @@ void placeOrder() {
         totalAmount += dishes[dishIndex].price;  // 在这里将totalAmount变量增加
 
         // 保存更新后的菜品信息到dish_info.txt文件中
-        saveDishes("dish_info.txt");
+        //saveOrderInfo(tableNumber, peopleNumber, orderCount, totalAmount);
+        }
+}
+
+void checkout(int orderCount, double totalAmount) {
+    printf("\e[1;1H\e[2J");
+    printf(GRN "已下单！您已点了%d道菜，目前的金额为%.2lf元\n" RESET, orderCount, totalAmount);
+
+    while (1) {
+        printf("\n********** 选项 **********\n");
+        printf("1. 加菜\n");
+        printf("2. 查看餐品状态\n");
+        printf("3. 去支付\n");
+        printf("请输入选项的编号（输入0退出）：");
+
+        int choice;
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 0:
+                mainMenu();
+                return;
+            case 1:
+                //在这里实现加菜的功能
+                return;
+            case 2:
+                // 在这里实现查看餐品状态的功能
+                break;
+            case 3:
+                // 在这里实现去支付的功能
+                return;
+            default:
+                printf(RED "无效的选项，请重新选择\n" RESET);
+                break;
+        }
     }
 }
