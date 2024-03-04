@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include "color.h"
 #include "main_menu.h"
@@ -34,7 +35,7 @@ void mainMenu() {
                 break;
             case 3:
                 printf(YEL "退出程序\n" RESET);
-                return;
+                exit(0);
             default:
                 printf(RED "无效的选项，请重新选择\n" RESET);
         }
