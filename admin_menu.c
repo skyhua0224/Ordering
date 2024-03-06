@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "color.h"
+#include "dish.h"
+#include "receipt.h"
 
 void dishMenu(); 
 
@@ -11,9 +13,6 @@ void paymentSystem() {
     // 在这里实现支付系统功能
 }
 
-void printReceipt() {
-    // 在这里实现小票打印功能
-}
 
 void orderSystem() {
     // 在这里实现点菜系统功能
@@ -48,7 +47,7 @@ void adminMenu() {
                 paymentSystem();
                 break;
             case 4:
-                printReceipt();
+                //printReceipt(0, NULL);
                 break;
             case 5:
                 orderSystem();

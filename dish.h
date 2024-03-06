@@ -10,7 +10,7 @@ typedef struct {
     int orderCount;
     char name[50];
     char category[50];
-    double totalprice=0;
+    double totalPrice;
 } Dish;
 
 extern Dish dishes[MAX_DISHES];

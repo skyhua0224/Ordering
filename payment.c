@@ -2,6 +2,18 @@
 #include <unistd.h>
 #include "payment.h"
 #include "color.h"
+#include "receipt.h"  // 包含 receipt.h 文件
+
+void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes) {
+    // 提示用户是否打印小票
+    printf("是否打印小票？（1=是，0=否）：");
+    int printReceiptChoice;
+    scanf("%d", &printReceiptChoice);
+    if (printReceiptChoice == 1) {
+        printReceipt(tableNumber, totalAmount, dishes);  // 假设 dishes 是你的菜品数组
+        sleep(10);
+    }
+}
 
 void processPayment(int tableNumber, double totalAmount) {
     printf(CLEAR_SCREEN_ANSI);  // 清屏
@@ -26,6 +38,7 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, (double)((int)totalAmount));
+            askPrintReceipt(tableNumber, totalAmount, dishes);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;
@@ -35,6 +48,7 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(RED "请使用" BLU "支付宝" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
+            askPrintReceipt(tableNumber, totalAmount, dishes);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;
@@ -44,6 +58,7 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(RED "请使用" GRN "微信" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
+            askPrintReceipt(tableNumber, totalAmount, dishes);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;
@@ -53,6 +68,7 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(RED "请使用" MAG "云闪付" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
+            askPrintReceipt(tableNumber, totalAmount, dishes);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;

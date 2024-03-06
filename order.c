@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "payment.h"
 
 void addOrder() {
   // 在这里实现加单功能
@@ -139,38 +140,37 @@ void placeOrder(int tableNumber, int peopleNumber) {
 
 void checkout(int tableNumber, int peopleNumber, int orderCount,
               double totalAmount) {
-  printf("\e[1;1H\e[2J");
-  printf(GRN "已下单！您已点了%d道菜，目前的金额为%.2lf元\n" RESET, orderCount,
-         totalAmount);
+    printf("\e[1;1H\e[2J");
+    printf(GRN "已下单！您已点了%d道菜，目前的金额为%.2lf元\n" RESET, orderCount,
+           totalAmount);
 
-  while (1) {
-    printf("\n********** 选项 **********\n");
-    printf("1. 加菜\n");
-    printf("2. 查看餐品状态\n");
-    printf("3. 去支付\n");
-    printf("请输入选项的编号（输入0退出）：");
+    while (1) {
+        printf("\n********** 选项 **********\n");
+        printf("1. 加菜\n");
+        printf("2. 查看餐品状态\n");
+        printf("3. 去支付\n");
+        printf("请输入选项的编号（输入0退出）：");
 
-    int choice;
-    scanf("%d", &choice);
+        int choice;
+        scanf("%d", &choice);
 
-    switch (choice) {
-    case 0:
-      mainMenu();
-      return;
-    case 1:
-      placeOrder(tableNumber, peopleNumber);
-      return;
-    case 2:
-      // 在这里实现查看餐品状态的功能
-      break;
-    case 3:
-      processPayment(tableNumber, totalAmount);
-      
-
-        return;
-      default:
-        printf(RED "无效的选项，请重新选择\n" RESET);
-        break;
-      }
+        switch (choice) {
+        case 0:
+            mainMenu();
+            return;
+        case 1:
+            placeOrder(tableNumber, peopleNumber);
+            return;
+        case 2:
+            // 在这里实现查看餐品状态的功能
+            break;
+        case 3:
+            processPayment(tableNumber, totalAmount);
+            askPrintReceipt(tableNumber, totalAmount, dishes);  // 假设 dishes 是你的菜品数组
+            return;
+        default:
+            printf(RED "无效的选项，请重新选择\n" RESET);
+            break;
+        }
     }
-  }
+}
