@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <unistd.h>
+#include "payment.h"
+#include "color.h"
+
+void processPayment(int tableNumber, double totalAmount) {
+    printf(CLEAR_SCREEN_ANSI);  // 清屏
+
+    printf(GRN "桌号：%d\n" RESET, tableNumber);
+    printf(GRN "总金额：%.2lf元\n" RESET, totalAmount);
+
+    printf(CYN "请选择支付方式：\n" RESET);
+    printf("1. " RED "现金\n" RESET);
+    printf("2. " BLU "支付宝\n" RESET);
+    printf("3. " YEL "微信支付\n" RESET);
+    printf("4. " MAG "云闪付\n" RESET);
+    printf("5. " GRA "我要吃霸王餐！\n" RESET);
+    printf("6. " GRA "回到上级菜单\n" RESET);
+
+    int choice;
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
+            sleep(5);
+            printf(GRN "实收：" YEL "%.2lf元\n" RESET, (double)((int)totalAmount));
+            printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
+            sleep(5);
+            break;
+        case 2:
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
+            printf(RED "请使用" BLU "支付宝" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
+            sleep(5);
+            printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
+            printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
+            sleep(5);
+            break;
+        case 3:
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
+            printf(RED "请使用" GRN "微信" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
+            sleep(5);
+            printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
+            printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
+            sleep(5);
+            break;
+        case 4:
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
+            printf(RED "请使用" MAG "云闪付" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
+            sleep(5);
+            printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
+            printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
+            sleep(5);
+            break;
+        case 5:
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            printf(RED "你想吃霸王餐？！\n" RESET);
+            sleep(1);
+            printf(RED "这是不可能的！\n" RESET);
+            sleep(1);
+            printf(RED "我们的保安正在赶来...\n" RESET);
+            sleep(1);
+            printf(RED "你被赶出了餐厅！\n" RESET);
+            sleep(1);
+            return;
+        case 6:
+            // 返回上级菜单
+            return;
+        default:
+            printf(RED "无效的选项，请重新选择\n" RESET);
+            break;
+    }
+}

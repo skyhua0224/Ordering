@@ -6,6 +6,7 @@
 #include <string.h>
 #include "order_info.h"
 #include "main_menu.h"
+#include "payment.h"
 
 void addOrder() {
     // 在这里实现加单功能
@@ -30,7 +31,7 @@ void placeOrder(int tableNumber, int peopleNumber) {
         while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount) == 4) {
             if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) {
                 // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
-                checkout(currentOrderCount, currentTotalAmount);
+                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount);
                 fclose(orderInfoFile);
                 return;
             }
@@ -65,7 +66,7 @@ void placeOrder(int tableNumber, int peopleNumber) {
             fprintf(orderInfoFile, "\n%d %d %d %.2lf", tableNumber, peopleNumber, orderCount, totalAmount);  // 在新的一行中写入订单信息
             fclose(orderInfoFile);
 
-            checkout(orderCount, totalAmount);
+            checkout(tableNumber, peopleNumber, orderCount, totalAmount);
         }
 
         if (categoryChoice == -1) {
@@ -127,7 +128,7 @@ void placeOrder(int tableNumber, int peopleNumber) {
         }
 }
 
-void checkout(int orderCount, double totalAmount) {
+void checkout(int tableNumber, int peopleNumber, int orderCount, double totalAmount) {
     printf("\e[1;1H\e[2J");
     printf(GRN "已下单！您已点了%d道菜，目前的金额为%.2lf元\n" RESET, orderCount, totalAmount);
 
@@ -146,13 +147,13 @@ void checkout(int orderCount, double totalAmount) {
                 mainMenu();
                 return;
             case 1:
-                //在这里实现加菜的功能
+                placeOrder(tableNumber, peopleNumber); 
                 return;
             case 2:
                 // 在这里实现查看餐品状态的功能
                 break;
             case 3:
-                // 在这里实现去支付的功能
+                processPayment(tableNumber, totalAmount);
                 return;
             default:
                 printf(RED "无效的选项，请重新选择\n" RESET);

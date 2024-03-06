@@ -5,15 +5,6 @@
 #include "color.h"
 #include "order_info.h" 
 
-
-void inputTableNumber() {
-    // 在这里实现输入桌台人数功能
-}
-
-void payment() {
-    // 在这里实现支付功能
-}
-
 void customerMenu() {
     printf("\e[1;1H\e[2J");
     printf("欢迎光临SkyHua Virtual 餐厅，请输入您的桌号（范围1-100）：");
@@ -23,6 +14,24 @@ void customerMenu() {
     if (tableNumber < 1 || tableNumber > 100) {
         printf(RED "无效的桌号，请重新输入\n" RESET);
         return;
+    }
+
+    // 从order_info.txt文件中加载订单信息
+    int currentTableNumber = 0;
+    int currentPeopleNumber = 0;
+    int currentOrderCount = 0;
+    double currentTotalAmount = 0;
+    FILE *orderInfoFile = fopen("order_info.txt", "r");
+    if (orderInfoFile != NULL) {
+        while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount) == 4) {
+            if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) {
+                // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
+                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount);
+                fclose(orderInfoFile);
+                return;
+            }
+        }
+        fclose(orderInfoFile);
     }
 
     printf("\e[1;1H\e[2J");
