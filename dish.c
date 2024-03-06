@@ -109,7 +109,13 @@ int selectDishByCategory(const char* category) {
     // 为这个类别的菜品重新生成dishIndices数组
     for (int i = 0; i < numDishes; i++) {
         if (strcmp(dishes[i].category, category) == 0) {
-            printf("%d. 名称：%s，价格：%.2lf，库存：%d\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
+            if (dishes[i].stock == 0) {
+                printf("%d. " BLU "[沽清] " RESET "名称：%s，价格：%.2lf，库存：%d\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
+            } else if (isHotDish(dishes[i])) {
+                printf("%d. " RED "[热销] " RESET "名称：%s，价格：%.2lf，库存：%d\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
+            } else {
+                printf("%d. 名称：%s，价格：%.2lf，库存：%d\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
+            }
             dishIndices[numDishesInCategory] = i;
             numDishesInCategory++;
         }
@@ -126,6 +132,28 @@ int selectDishByCategory(const char* category) {
     }
 
     return dishIndices[dishChoice - 1];
+}
+
+int isHotDish(Dish dish) {
+    // 在这里，我们假设热销菜品的库存是所有菜品库存的最少的五个
+    int hotStockCounts[5] = {INT_MAX, INT_MAX, INT_MAX, INT_MAX, INT_MAX};
+
+    for (int i = 0; i < numDishes; i++) {
+        if (dishes[i].stock < hotStockCounts[4]) {
+            hotStockCounts[4] = dishes[i].stock;
+            // 对hotStockCounts数组进行排序，使得最小的库存总是在hotStockCounts[4]中
+            for (int j = 3; j >= 0; j--) {
+                if (hotStockCounts[j] > hotStockCounts[j + 1]) {
+                    int temp = hotStockCounts[j];
+                    hotStockCounts[j] = hotStockCounts[j + 1];
+                    hotStockCounts[j + 1] = temp;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    return dish.stock <= hotStockCounts[4];
 }
 
 // 这个函数处理用户的选择和操作

@@ -3,6 +3,7 @@
 
 #define MAX_DISHES 100
 #define MAX_CATEGORIES 10
+#define INT_MAX 2147483647
 
 typedef struct {
     int stock;
@@ -22,6 +23,7 @@ extern int numCategories;
 void loadDishes(const char* filename);
 void saveDishes(const char* filename);
 int selectDishByCategory(const char* category);  // 新增函数声明
+int isHotDish(Dish dish);
 void handleDishSelectionByCategory(const char* category);  // 新增函数声明
 
 #endif
