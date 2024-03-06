@@ -8,10 +8,10 @@
 
 void clearScreen() {
     write(STDOUT_FILENO, CLEAR_SCREEN_ANSI, 12);
-}
+}// 清屏函数
 
 void adminMenu();  // 声明adminMenu函数
-void customerMenu();  // 声明customerMenu函数\
+void customerMenu();  // 声明customerMenu函数
 
 void mainMenu() {
     int choice;

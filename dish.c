@@ -163,7 +163,7 @@ void handleDishSelectionByCategory(const char* category) {
 }
 
 void viewDishes() {
-    printf("\e[1;1H\e[2J");
+    printf(CLEAR_SCREEN_ANSI);  // 清屏
     printf("\n********** 查看菜品 **********\n");
 
     // 每次查看菜品信息前，都重新从文件中加载数据
