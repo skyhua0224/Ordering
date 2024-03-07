@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "payment.h"
+#include "table.h"
 
 void addOrder() {
   // 在这里实现加单功能
