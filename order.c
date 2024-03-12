@@ -21,25 +21,29 @@ void placeOrder(int tableNumber, int peopleNumber) {
   // 首先，我们需要从dish_info.txt文件中加载菜品信息
   loadDishes("dish_info.txt");
 
-    // 从order_info.txt文件中加载订单信息
-    int orderCount = 0;  // 在这里声明orderCount变量
-    double totalAmount = 0;  // 在这里声明totalAmount变量
-    int currentTableNumber = 0;  // 在这里声明currentTableNumber变量
-    int currentPeopleNumber = 0;  // 在这里声明currentPeopleNumber变量
-    int currentOrderCount = 0;  // 在这里声明currentOrderCount变量
-    double currentTotalAmount = 0;  // 在这里声明currentTotalAmount变量
-    FILE *orderInfoFile = fopen("order_info.txt", "r");
-    if (orderInfoFile != NULL) {
-        while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount) == 4) {
-            if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) {
-                // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
-                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount);
-                fclose(orderInfoFile);
-                return;
-            }
-        }
+  // 从order_info.txt文件中加载订单信息
+  int orderCount = 0;            // 在这里声明orderCount变量
+  double totalAmount = 0;        // 在这里声明totalAmount变量
+  int currentTableNumber = 0;    // 在这里声明currentTableNumber变量
+  int currentPeopleNumber = 0;   // 在这里声明currentPeopleNumber变量
+  int currentOrderCount = 0;     // 在这里声明currentOrderCount变量
+  double currentTotalAmount = 0; // 在这里声明currentTotalAmount变量
+  FILE *orderInfoFile = fopen("order_info.txt", "r");
+  if (orderInfoFile != NULL) {
+    while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber,
+                  &currentPeopleNumber, &currentOrderCount,
+                  &currentTotalAmount) == 4) {
+      if (currentTableNumber == tableNumber && currentOrderCount > 0 &&
+          currentTotalAmount > 0) {
+        // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
+        checkout(currentTableNumber, currentPeopleNumber, currentOrderCount,
+                 currentTotalAmount);
         fclose(orderInfoFile);
+        return;
+      }
     }
+    fclose(orderInfoFile);
+  }
 
   int dishIndex = 0; // 在这里声明dishIndex变量
 
@@ -76,41 +80,88 @@ void placeOrder(int tableNumber, int peopleNumber) {
       checkout(tableNumber, peopleNumber, orderCount, totalAmount);
     }
 
-    if (categoryChoice == -1) {
-      // 显示所有已点的菜品
+  if (categoryChoice == -1) {
+    // 从文件中读取已点的菜品
+    char filename[20];
+    sprintf(filename, "table_%d.txt", tableNumber);
+    FILE *tableFile = fopen(filename, "r");
+    if (tableFile != NULL) {
+      char buffer[1024];
+      fgets(buffer, sizeof(buffer), tableFile);
+      fclose(tableFile);
+
+      // 分割字符串并显示所有已点的菜品
       printf("\n********** 已点菜品 **********\n");
+      char *dishName = strtok(buffer, " ");
       int dishCount = 0;
-      for (int i = 0; i < numDishes; i++) {
-        if (dishes[i].orderCount > 0) {
-          printf("%d. %s\n", dishCount + 1, dishes[i].name);
-          dishCount++;
-        }
+      while (dishName != NULL) {
+        printf("%d. %s\n", dishCount + 1, dishName);
+        dishName = strtok(NULL, " ");
+        dishCount++;
       }
 
       // 让用户选择一个已点的菜品来删除
-      printf("请输入要删除的菜品的编号：");
+      printf("请输入要删除的菜品的编号（按0返回）：");
+      int dishIndex;
       scanf("%d", &dishIndex);
       dishIndex--; // 转换为数组索引
 
       if (dishIndex >= 0 && dishIndex < dishCount) {
+        // 重新从文件中读取已点的菜品
+        tableFile = fopen(filename, "r");
+        fgets(buffer, sizeof(buffer), tableFile);
+        fclose(tableFile);
+
+        // 找到要删除的菜品名称
+        dishName = strtok(buffer, " ");
+        char *dishToDelete = NULL;
+        for (int i = 0; i <= dishIndex; i++) {
+          dishToDelete = dishName;
+          dishName = strtok(NULL, " ");
+        }
+
+        // 删除table_桌号.txt文件中的要删除的上述要删除的菜品
+        FILE *tempFile = fopen("temp.txt", "w");
+        tableFile = fopen(filename, "r");
+        int deleted = 0; // 将标志的声明移出循环
+        if (tableFile != NULL && tempFile != NULL) {
+          while (fgets(buffer, sizeof(buffer), tableFile) != NULL) {
+            char *line = strtok(buffer, " ");
+            while (line != NULL) {
+              if (strcmp(line, dishToDelete) != 0 || deleted) {
+                fprintf(tempFile, "%s ", line);
+              } else {
+                deleted = 1; // 当删除一个菜品后，将标志设为1
+              }
+              line = strtok(NULL, " ");
+            }
+            fprintf(tempFile, "\n");
+          }
+          fclose(tableFile);
+          fclose(tempFile);
+          remove(filename);
+          rename("temp.txt", filename);
+          dishCount--;
+        }
+
+        // 找到对应的菜品价格，并从总金额中减去该价格
         for (int i = 0; i < numDishes; i++) {
-          if (dishIndex < dishes[i].orderCount) {
-            dishes[i].stock++;
-            dishes[i].orderCount--;
-            orderCount--;
-            totalAmount -= dishes[i].price; // 在这里将totalAmount变量减少
-            // 保存更新后的菜品信息到dish_info.txt文件中
-            saveDishes("dish_info.txt");
+          if (strcmp(dishes[i].name, dishToDelete) == 0) {
+            totalAmount -= dishes[i].price;
             break;
-          } else {
-            dishIndex -= dishes[i].orderCount;
           }
         }
+
+        // 将点菜数量减1
+        orderCount--;
+
+        printf(GRN "已删除菜品：%s\n" RESET, dishToDelete);
       } else {
         printf(RED "无效的选项，请重新选择\n" RESET);
       }
-      continue;
     }
+    continue;
+  }
 
     if (categoryChoice < 1 || categoryChoice > numCategories) {
       printf(RED "无效的选项，请重新选择\n" RESET);
@@ -129,6 +180,15 @@ void placeOrder(int tableNumber, int peopleNumber) {
     dishes[dishIndex].orderCount++;
     orderCount++;                           // 在这里将orderCount变量加1
     totalAmount += dishes[dishIndex].price; // 在这里将totalAmount变量增加
+
+    // 新建文件并写入菜品信息
+    char filename[20];
+    sprintf(filename, "table_%d.txt", tableNumber);
+    FILE *tableFile = fopen(filename, "a");
+    if (tableFile != NULL) {
+        fprintf(tableFile, "%s ", dishes[dishIndex].name);
+        fclose(tableFile);
+    }
 
     // 保存更新后的菜品信息到dish_info.txt文件中
     // saveOrderInfo(tableNumber, peopleNumber, orderCount, totalAmount);
