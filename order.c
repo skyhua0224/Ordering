@@ -136,6 +136,14 @@ void placeOrder(int tableNumber, int peopleNumber) {
               if (strcmp(line, dishToDelete) != 0 || deleted) {
                 fprintf(tempFile, "%s ", line);
               } else {
+                int quantity = atoi(strtok(NULL, " "));
+                double price = atof(strtok(NULL, " "));
+                double total = atof(strtok(NULL, " "));
+                quantity--;
+                total -= price;
+                if (quantity > 0) {
+                  fprintf(tempFile, "%s %d %.2lf %.2lf\n", line, quantity, price, total);
+                }
                 deleted = 1; // 当删除一个菜品后，将标志设为1
               }
               line = strtok(NULL, " ");
@@ -194,10 +202,76 @@ void placeOrder(int tableNumber, int peopleNumber) {
     // 新建文件并写入菜品信息
     char filename[20];
     sprintf(filename, "table_%d.txt", tableNumber);
-    FILE *tableFile = fopen(filename, "a");
+    FILE *tableFile = fopen(filename, "a+");
     if (tableFile != NULL) {
-        fprintf(tableFile, "%s ", dishes[dishIndex].name);
+      fclose(tableFile);
+    }
+
+    tableFile = fopen(filename, "r");
+    char buffer[1024];
+    int found = 0;
+    if (tableFile != NULL) {
+      while (fgets(buffer, sizeof(buffer), tableFile) != NULL) {
+        char *dishName = strtok(buffer, " ");
+        if (strcmp(dishName, dishes[dishIndex].name) == 0) {
+          int quantity = atoi(strtok(NULL, " "));
+          double price = atof(strtok(NULL, " "));
+          double total = atof(strtok(NULL, " "));
+          quantity++;
+          total += price;
+          found = 1;
+          break;
+        }
+      }
+      fclose(tableFile);
+    }
+
+    if (found) {
+      // 如果找到了菜品，我们需要更新这个菜品的数量和总价
+      // 首先，我们需要将文件中的所有内容读取到一个字符串数组中
+      char lines[1024][1024];
+      int lineCount = 0;
+      tableFile = fopen(filename, "r");
+      if (tableFile != NULL) {
+        while (fgets(lines[lineCount], sizeof(lines[lineCount]), tableFile) != NULL) {
+          lines[lineCount][strlen(lines[lineCount]) - 1] = '\0'; // 去掉换行符
+          lineCount++;
+        }
         fclose(tableFile);
+      }
+
+      // 然后，我们需要更新找到的菜品的数量和总价
+      for (int i = 0; i < lineCount; i++) {
+        char *line = strdup(lines[i]); // 复制当前行，以便我们可以使用strtok函数
+        char *dishName = strtok(line, " ");
+        if (strcmp(dishName, dishes[dishIndex].name) == 0) {
+          int quantity = atoi(strtok(NULL, " "));
+          double price = atof(strtok(NULL, " "));
+          double total = atof(strtok(NULL, " "));
+          quantity++;
+          total += price;
+          sprintf(lines[i], "%s %d %.2lf %.2lf", dishName, quantity, price, total);
+          free(line);
+          break;
+        }
+        free(line);
+      }
+
+      // 最后，我们需要将更新后的内容写回到文件中
+      tableFile = fopen(filename, "w");
+      if (tableFile != NULL) {
+        for (int i = 0; i < lineCount; i++) {
+          fprintf(tableFile, "%s\n", lines[i]); // 添加换行符
+        }
+        fclose(tableFile);
+      }
+    } else {
+      // 如果没有找到菜品，我们需要在文件末尾添加新的一行
+      tableFile = fopen(filename, "a");
+      if (tableFile != NULL) {
+        fprintf(tableFile, "%s 1 %.2lf %.2lf\n", dishes[dishIndex].name, dishes[dishIndex].price, dishes[dishIndex].price);
+        fclose(tableFile);
+      }
     }
 
     // 保存更新后的菜品信息到dish_info.txt文件中
