@@ -93,20 +93,25 @@ void placeOrder(int tableNumber, int peopleNumber) {
       // 分割字符串并显示所有已点的菜品
       printf("\n********** 已点菜品 **********\n");
       char *dishName = strtok(buffer, " ");
-      int dishCount = 0;
+      int dishIndex = 0;
       while (dishName != NULL) {
-        printf("%d. %s\n", dishCount + 1, dishName);
+        if (strlen(dishName) > 0) {  // 只有当菜品名称不为空时，才显示
+          printf("%d. %s\n", dishIndex + 1, dishName);
+          dishIndex++;
+        }
         dishName = strtok(NULL, " ");
-        dishCount++;
+        if (dishIndex >= orderCount) {
+          break;
+        }
       }
 
       // 让用户选择一个已点的菜品来删除
       printf("请输入要删除的菜品的编号（按0返回）：");
-      int dishIndex;
-      scanf("%d", &dishIndex);
-      dishIndex--; // 转换为数组索引
+      int dishChoice;
+      scanf("%d", &dishChoice);
+      dishChoice--; // 转换为数组索引
 
-      if (dishIndex >= 0 && dishIndex < dishCount) {
+      if (dishChoice >= 0 && dishChoice < orderCount) {
         // 重新从文件中读取已点的菜品
         tableFile = fopen(filename, "r");
         fgets(buffer, sizeof(buffer), tableFile);
@@ -115,7 +120,7 @@ void placeOrder(int tableNumber, int peopleNumber) {
         // 找到要删除的菜品名称
         dishName = strtok(buffer, " ");
         char *dishToDelete = NULL;
-        for (int i = 0; i <= dishIndex; i++) {
+        for (int i = 0; i <= dishChoice; i++) {
           dishToDelete = dishName;
           dishName = strtok(NULL, " ");
         }
@@ -141,19 +146,24 @@ void placeOrder(int tableNumber, int peopleNumber) {
           fclose(tempFile);
           remove(filename);
           rename("temp.txt", filename);
-          dishCount--;
+          orderCount--;
         }
 
         // 找到对应的菜品价格，并从总金额中减去该价格
-        for (int i = 0; i < numDishes; i++) {
-          if (strcmp(dishes[i].name, dishToDelete) == 0) {
-            totalAmount -= dishes[i].price;
-            break;
+        FILE *dishInfoFile = fopen("dish_info.txt", "r");
+        if (dishInfoFile != NULL) {
+          char dishBuffer[1024];
+          while (fgets(dishBuffer, sizeof(dishBuffer), dishInfoFile) != NULL) {
+            char *dishNameFromFile = strtok(dishBuffer, " ");
+            if (strcmp(dishNameFromFile, dishToDelete) == 0) {
+              strtok(NULL, " "); // 跳过菜品的库存
+              double dishPrice = atof(strtok(NULL, " ")); // 获取菜品的价格
+              totalAmount -= dishPrice;
+              break;
+            }
           }
+          fclose(dishInfoFile);
         }
-
-        // 将点菜数量减1
-        orderCount--;
 
         printf(GRN "已删除菜品：%s\n" RESET, dishToDelete);
       } else {
