@@ -11,7 +11,7 @@ void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char
       fprintf(stream, "===================================================\n");
       fprintf(stream, "桌号：%d\n", tableNumber);
       fprintf(stream, "---------------------------------------------------\n");
-      fprintf(stream, " 菜品                价格    数量    小计\n");
+      fprintf(stream, " 菜品                单价    数量    小计\n");
       fprintf(stream, "---------------------------------------------------\n");
 
       for (int i = 0; i < lineCount; i++) {
