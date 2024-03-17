@@ -155,7 +155,10 @@ void placeOrder(int tableNumber, int peopleNumber) {
         tableFile = fopen(filename, "w");
         if (tableFile != NULL) {
           for (int i = 0; i < lineCount; i++) {
-            fprintf(tableFile, "%s\n", lines[i]); // 添加换行符
+            // 在写入文件之前，先检查你要写入的数据是否正确
+            if (strstr(lines[i], "�") == NULL) {
+              fprintf(tableFile, "%s\n", lines[i]); // 添加换行符
+            }
           }
           fclose(tableFile);
         }
