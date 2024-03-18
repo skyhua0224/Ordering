@@ -132,7 +132,7 @@ void placeOrder(int tableNumber, int peopleNumber) {
           printf(RED "内存不足，无法删除菜品\n" RESET);
           continue;
         }
-        char *dishToDelete = strtok(line, " ");
+        char *dishToDelete = strdup(strtok(line, " "));
         int quantity = atoi(strtok(NULL, " "));
         double price = atof(strtok(NULL, " "));
         double total = atof(strtok(NULL, " "));
@@ -150,6 +150,7 @@ void placeOrder(int tableNumber, int peopleNumber) {
           }
           lineCount--;
         }
+        free(dishToDelete);
 
         // 将更新后的内容写回到文件中
         tableFile = fopen(filename, "w");
