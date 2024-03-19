@@ -227,8 +227,16 @@ void addDish() {
 
     Dish newDish;
 
-    printf("请输入菜品类别：");
-    scanf("%s", newDish.category);
+    printf("请输入菜品类别的编号：");
+    int categoryIndex;
+    scanf("%d", &categoryIndex);
+
+    if (categoryIndex < 1 || categoryIndex > numCategories) {
+        printf(RED "无效的选项，请重新选择\n" RESET);
+        return;
+    }
+
+    strcpy(newDish.category, categories[categoryIndex - 1]);
 
     printf("请输入菜品名称：");
     scanf("%s", newDish.name);
@@ -240,9 +248,6 @@ void addDish() {
 
     dishes[numDishes] = newDish;
     numDishes++;
-
-    // 添加新的菜品类别到categories数组中
-    addCategory(newDish.category);
 
     FILE* file = fopen("dish_info.txt", "a");
     if (file == NULL) {
