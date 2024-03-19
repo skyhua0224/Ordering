@@ -217,6 +217,14 @@ void addDish() {
     printf("\e[1;1H\e[2J");
     printf("\n********** 添加菜品 **********\n");
 
+    // 每次添加菜品前，都重新从文件中加载数据
+    loadDishes("dish_info.txt");
+
+    // 显示所有的菜品类别
+    for (int i = 0; i < numCategories; i++) {
+        printf("%d. %s\n", i + 1, categories[i]);
+    }
+
     Dish newDish;
 
     printf("请输入菜品类别：");
