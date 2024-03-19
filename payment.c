@@ -18,13 +18,18 @@
     #include <unistd.h> // for sleep
 #endif
 
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) { }
+}
+
 void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes) {
-    // 提示用户是否打印小票
     printf("是否打印小票？（1=是，0=否）：");
     int printReceiptChoice;
     scanf("%d", &printReceiptChoice);
+    clearInputBuffer();
     if (printReceiptChoice == 1) {
-        printReceipt(tableNumber, totalAmount, dishes);  // 假设 dishes 是你的菜品数组
+        printReceipt(tableNumber, totalAmount, dishes);
         sleep(10);
     }
 }
@@ -45,6 +50,7 @@ void processPayment(int tableNumber, double totalAmount) {
 
     int choice;
     scanf("%d", &choice);
+    clearInputBuffer();
 
     switch (choice) {
         case 1:
