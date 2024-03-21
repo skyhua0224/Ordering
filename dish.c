@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "dish.h"
 #include "color.h"
+#include "payment.h"
 
 #define MAX_DISHES 100
 #define MAX_CATEGORIES 10
@@ -230,6 +231,7 @@ void addDish() {
     printf("请输入菜品类别的编号：");
     int categoryIndex;
     scanf("%d", &categoryIndex);
+    clearInputBuffer();
 
     if (categoryIndex < 1 || categoryIndex > numCategories) {
         printf(RED "无效的选项，请重新选择\n" RESET);
@@ -240,11 +242,15 @@ void addDish() {
 
     printf("请输入菜品名称：");
     scanf("%s", newDish.name);
+    clearInputBuffer();
 
     printf("请输入菜品价格：");
     scanf("%lf", &newDish.price);
+    clearInputBuffer();
+
     printf("请输入菜品库存：");
     scanf("%d", &newDish.stock);
+    clearInputBuffer();
 
     dishes[numDishes] = newDish;
     numDishes++;
