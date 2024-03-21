@@ -47,20 +47,17 @@ void placeOrder(int tableNumber, int peopleNumber) {
 
   int dishIndex = 0; // 在这里声明dishIndex变量
 
-  while (1) { // 添加一个循环来让用户继续点菜，直到用户选择退出
-    // 显示点了几道菜和目前的金额
-    printf("\e[1;1H\e[2J");
-    printf(GRN "桌号%d，您已点了%d道菜，目前的金额为%.2lf元\n" RESET,
+  while (1) { 
+    printf(CLEAR_SCREEN_ANSI);
+    printf(BWHT "********** 桌号%d，您已点了%d道菜，目前的金额为%.2lf元 **********\n" RESET,
            tableNumber, orderCount, totalAmount);
 
-    // 然后，我们可以显示所有的菜品类别，让用户选择一个类别
-    printf("\n********** 菜品类别 **********\n");
+    printf("\n" BYEL "********** 菜品类别 **********\n" RESET);
     for (int i = 0; i < numCategories; i++) {
-      printf("%d. %s\n", i + 1, categories[i]);
+      printf(BGRN "%d. %s\n" RESET, i + 1, categories[i]);
     }
 
-    printf("请输入要点的菜品类别的编号（输入0下单，输入-1删除已点菜品，输入-"
-           "2退出点菜）：");
+    printf(BBLU "请输入要点的菜品类别的编号（输入0下单，输入-1删除已点菜品，输入-2退出点菜）：" RESET);
     int categoryChoice;
     scanf("%d", &categoryChoice);
 
@@ -106,7 +103,7 @@ void placeOrder(int tableNumber, int peopleNumber) {
       fclose(tableFile);
 
       // 显示所有已点的菜品
-      printf("\n********** 已点菜品 **********\n");
+      printf("\n" BYEL "********** 已点菜品 **********\n" RESET);
       for (int i = 0; i < lineCount; i++) {
         char *line = strdup(lines[i]);
         if (line == NULL) {
@@ -115,12 +112,12 @@ void placeOrder(int tableNumber, int peopleNumber) {
         }
         char *dishName = strtok(line, " ");
         int quantity = atoi(strtok(NULL, " "));
-        printf("%d. %s x%d\n", i + 1, dishName, quantity);
+        printf(BGRN "%d. %s x%d\n" RESET, i + 1, dishName, quantity);
         free(line);
       }
 
       // 让用户选择一个已点的菜品来删除
-      printf("请输入要删除的菜品的编号（按0返回）：");
+      printf(BBLU "请输入要删除的菜品的编号（按0返回）：" RESET);
       int dishChoice;
       scanf("%d", &dishChoice);
       dishChoice--; // 转换为数组索引
@@ -269,39 +266,37 @@ void placeOrder(int tableNumber, int peopleNumber) {
   }
 }
 
-void checkout(int tableNumber, int peopleNumber, int orderCount,
-              double totalAmount) {
-    printf("\e[1;1H\e[2J");
-    printf(GRN "已下单！您已点了%d道菜，目前的金额为%.2lf元\n" RESET, orderCount,
-           totalAmount);
+void checkout(int tableNumber, int peopleNumber, int orderCount, double totalAmount) {
+  printf(CLEAR_SCREEN_ANSI);
+  printf(BWHT "********** 已下单！您已点了%d道菜，目前的金额为%.2lf元 **********\n" RESET, orderCount, totalAmount);
 
-    while (1) {
-        printf("\n********** 选项 **********\n");
-        printf("1. 加菜\n");
-        printf("2. 查看餐品状态\n");
-        printf("3. 去支付\n");
-        printf("请输入选项的编号（输入0退出）：");
+  while (1) {
+    printf("\n" BYEL "********** 选项 **********\n" RESET);
+    printf(BGRN "1. 加菜\n" RESET);
+    printf(BGRN "2. 查看餐品状态\n" RESET);
+    printf(BGRN "3. 去支付\n" RESET);
+    printf(BBLU "请输入选项的编号（输入0退出）：" RESET);
 
-        int choice;
-        scanf("%d", &choice);
+    int choice;
+    scanf("%d", &choice);
 
-        switch (choice) {
-        case 0:
-            mainMenu();
-            return;
-        case 1:
-            placeOrder(tableNumber, peopleNumber);
-            return;
-        case 2:
-            // 在这里实现查看餐品状态的功能
-            break;
-        case 3:
-            processPayment(tableNumber, totalAmount);
-            askPrintReceipt(tableNumber, totalAmount, dishes);  // 假设 dishes 是你的菜品数组
-            return;
-        default:
-            printf(RED "无效的选项，请重新选择\n" RESET);
-            break;
-        }
+    switch (choice) {
+    case 0:
+      mainMenu();
+      return;
+    case 1:
+      placeOrder(tableNumber, peopleNumber);
+      return;
+    case 2:
+      // 在这里实现查看餐品状态的功能
+      break;
+    case 3:
+      processPayment(tableNumber, totalAmount);
+      askPrintReceipt(tableNumber, totalAmount, dishes);  // 假设 dishes 是你的菜品数组
+      return;
+    default:
+      printf(RED "无效的选项，请重新选择\n" RESET);
+      break;
     }
+  }
 }

@@ -3,7 +3,6 @@
 
 #define MAX_DISHES 100
 #define MAX_CATEGORIES 10
-#define INT_MAX 2147483647
 
 typedef struct {
     int stock;

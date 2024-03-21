@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "sleep.h"
 #include "dish.h"
 #include "color.h"
@@ -65,34 +66,34 @@ void saveDishes(const char* filename) {
 }
 
 void modifyPrice(int dishIndex) {
-    printf("\033[1;32m请输入新的价格：\033[0m");
+    printf(BGRN "请输入新的价格：" RESET);
     double newPrice;
     scanf("%lf", &newPrice);
 
     dishes[dishIndex].price = newPrice;
 
-    printf("\033[H\033[J"); // 清屏
-    printf(GRN "%s\033[0m的\033[1;33m价格\033[0m已经改为\033[1;36m%.2lf\033[0m！\n", dishes[dishIndex].name, newPrice);
+    printf(CLEAR_SCREEN_ANSI); // 清屏
+    printf(GRN "%s" RESET "的" BYEL "价格" RESET "已经改为" BCYN "%.2lf" RESET "！\n", dishes[dishIndex].name, newPrice);
     sleep(5); // 显示5秒的提示信息
     saveDishes("dish_info.txt");
 }
 
 void modifyStock(int dishIndex) {
-    printf("\033[1;32m请输入新的库存：\033[0m");
+    printf(BGRN "请输入新的库存：" RESET);
     int newStock;
     scanf("%d", &newStock);
 
     dishes[dishIndex].stock = newStock;
 
-    printf("\033[H\033[J"); // 清屏
-    printf(GRN "%s\033[0m的\033[1;33m库存\033[0m已经改为\033[1;36m%d\033[0m！\n", dishes[dishIndex].name, newStock);
+    printf(CLEAR_SCREEN_ANSI); // 清屏
+    printf(GRN "%s" RESET "的" BYEL "库存" RESET "已经改为" BCYN "%d" RESET "！\n", dishes[dishIndex].name, newStock);
     sleep(5); // 显示5秒的提示信息
     saveDishes("dish_info.txt");
 }
 
 void deleteDishFromList(int dishIndex) {
-    printf("\033[H\033[J"); // 清屏
-    printf(GRN "%s\033[0m已经\033[1;36m删除\033[0m！\n", dishes[dishIndex].name);
+    printf(CLEAR_SCREEN_ANSI); // 清屏
+    printf(GRN "%s" RESET "已经" BRED "删除" RESET "！\n", dishes[dishIndex].name);
 
     // 将数组中的后续元素向前移动一位，覆盖要删除的元素
     for (int i = dishIndex; i < numDishes - 1; i++) {
@@ -107,7 +108,7 @@ void deleteDishFromList(int dishIndex) {
 
 // 这个函数只负责显示指定类别的菜品，并让用户选择一个菜品
 int selectDishByCategory(const char* category) {
-    printf("\n\033[1;36m********** %s **********\033[0m\n", category);
+    printf("\n" BCYN "********** %s **********\n" RESET, category);
 
     int dishIndices[MAX_DISHES];
     int numDishesInCategory = 0;
@@ -116,11 +117,11 @@ int selectDishByCategory(const char* category) {
     for (int i = 0; i < numDishes; i++) {
         if (strcmp(dishes[i].category, category) == 0) {
             if (dishes[i].stock == 0) {
-                printf("\033[1;34m%d. " BLU "[沽清] " RESET "名称：%s，价格：%.2lf，库存：%d\033[0m\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
+                printf(BBLU "%d. [沽清] " RESET "名称：%s，价格：%.2lf，库存：%d\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
             } else if (isHotDish(dishes[i])) {
-                printf("\033[1;34m%d. " RED "[热销] " RESET "名称：%s，价格：%.2lf，库存：%d\033[0m\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
+                printf(RED "%d. [热销] " RESET "名称：%s，价格：%.2lf，库存：%d\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
             } else {
-                printf("\033[1;34m%d. 名称：%s，价格：%.2lf，库存：%d\033[0m\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
+                printf("%d. 名称：%s，价格：%.2lf，库存：%d\n", numDishesInCategory + 1, dishes[i].name, dishes[i].price, dishes[i].stock);
             }
             dishIndices[numDishesInCategory] = i;
             numDishesInCategory++;
@@ -128,7 +129,7 @@ int selectDishByCategory(const char* category) {
     }
 
     // 让用户选择一个菜品
-    printf("\033[1;32m请选择一个菜品：\033[0m");
+    printf(BGRN "请选择一个菜品：" RESET);
     int dishChoice;
     scanf("%d", &dishChoice);
 

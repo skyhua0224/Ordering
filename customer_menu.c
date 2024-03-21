@@ -6,8 +6,9 @@
 #include "order_info.h" 
 
 void customerMenu() {
-    printf("\e[1;1H\e[2J");
-    printf("欢迎光临SkyHua Virtual 餐厅，请输入您的桌号（范围1-100）：");
+    printf("\033[H\033[J"); // 清屏
+    printf("\033[1;36m********** 欢迎光临SkyHua Virtual 餐厅 **********\033[0m\n");
+    printf("\033[1;32m请输入您的桌号（范围1-100）：\033[0m");
     int tableNumber;
     scanf("%d", &tableNumber);
 
@@ -34,10 +35,10 @@ void customerMenu() {
         fclose(orderInfoFile);
     }
 
-    printf("\e[1;1H\e[2J");
+    printf("\033[H\033[J"); // 清屏
     printf(GRN "桌号%d，您好！\n" RESET, tableNumber);
 
-    printf("请选择用餐人数：\n");
+    printf("\033[1;32m请选择用餐人数：\033[0m\n");
     int peopleNumber = 0;
     if (tableNumber >= 1 && tableNumber <= 60) {
         printf("1. 1人\n");
