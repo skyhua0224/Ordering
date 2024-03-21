@@ -295,24 +295,69 @@ void deleteDishByCategory(const char* category) {
 }
 
 void deleteDish() {
+    printf("\e[1;1H\e[2J");
+    printf("\n********** 删除菜品 **********\n");
+
+    // 每次删除菜品前，都重新从文件中加载数据
     loadDishes("dish_info.txt");
 
-    printf("\n********** 删除菜品 **********\n");
+    // 显示所有的菜品类别
     for (int i = 0; i < numCategories; i++) {
         printf("%d. %s\n", i + 1, categories[i]);
     }
-    printf("\e[1;1H\e[2J");
-    printf("请选择一个菜品类别：");
 
-    int choice;
-    scanf("%d", &choice);
+    printf("请输入菜品类别的编号：");
+    int categoryIndex;
+    scanf("%d", &categoryIndex);
+    clearInputBuffer();
 
-    if (choice < 1 || choice > numCategories) {
-        printf("无效的选项，请重新选择\n");
+    if (categoryIndex < 1 || categoryIndex > numCategories) {
+        printf(RED "无效的选项，请重新选择\n" RESET);
         return;
     }
 
-    deleteDishByCategory(categories[choice - 1]);
+    // 显示用户选择的类别下的所有菜品
+    int dishIndices[MAX_DISHES];
+    int numDishesInCategory = 0;
+    for (int i = 0; i < numDishes; i++) {
+        if (strcmp(dishes[i].category, categories[categoryIndex - 1]) == 0) {
+            printf("%d. %s\n", numDishesInCategory + 1, dishes[i].name);
+            dishIndices[numDishesInCategory] = i;
+            numDishesInCategory++;
+        }
+    }
+
+    printf("请输入要删除的菜品的编号：");
+    int dishChoice;
+    scanf("%d", &dishChoice);
+    clearInputBuffer();
+
+    if (dishChoice < 1 || dishChoice > numDishesInCategory) {
+        printf(RED "无效的选项，请重新选择\n" RESET);
+        return;
+    }
+
+    // 删除用户选择的菜品
+    for (int i = dishIndices[dishChoice - 1]; i < numDishes - 1; i++) {
+        dishes[i] = dishes[i + 1];
+    }
+    numDishes--;
+
+    // 将更新后的菜品信息写回文件
+    FILE* file = fopen("dish_info.txt", "w");
+    if (file == NULL) {
+        printf(RED "无法打开文件\n" RESET);
+        return;
+    }
+
+    for (int i = 0; i < numDishes; i++) {
+        fprintf(file, "%d %.2lf %s %s\n", dishes[i].stock, dishes[i].price, dishes[i].name, dishes[i].category);
+    }
+    fclose(file);
+
+    dishesLoaded = 0;  // 设置菜品信息需要重新加载
+
+    printf(GRN "菜品已成功删除\n" RESET);
 }
 
 void dishMenu() {
