@@ -6,6 +6,8 @@
 #include "payment.h"
 #include <unistd.h>
 #include "table.h"
+#include "receipt.h"
+#include <time.h>
 
 void dishMenu(); 
 
@@ -26,8 +28,10 @@ void paymentSystem() {
     int found = 0;
     double totalAmount;
     int tempTableNumber, peopleNumber, numDishes;
-    while (fscanf(file, "%d %d %d %lf", &tempTableNumber, &peopleNumber, &numDishes, &totalAmount) == 4) {
-        if (tempTableNumber == tableNumber) {
+    int paid;
+    char orderTime[64];
+    while (fscanf(file, "%d %d %d %lf %d %s", &tempTableNumber, &peopleNumber, &numDishes, &totalAmount, &paid, orderTime) == 6) {
+        if (tempTableNumber == tableNumber && paid == 0) {
             found = 1;
             break;
         }
@@ -60,7 +64,14 @@ void paymentSystem() {
             printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, (double)((int)totalAmount));
-            askPrintReceipt(tableNumber, totalAmount, NULL);  // 假设这个函数可以处理NULL作为dishes参数
+
+            // 获取支付时间
+            time_t t1 = time(NULL);
+            struct tm *tm1 = localtime(&t1);
+            char paymentTime1[64];
+            strftime(paymentTime1, sizeof(paymentTime1), "%Y-%m-%d %H:%M:%S", tm1);
+
+            askPrintReceipt(tableNumber, totalAmount, NULL, paymentTime1);  // 假设这个函数可以处理NULL作为dishes参数
             break;
         case 2:
             printf(CLEAR_SCREEN_ANSI);  // 清屏
@@ -68,7 +79,14 @@ void paymentSystem() {
             printf(RED "请使用" BLU "银行卡" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
-            askPrintReceipt(tableNumber, totalAmount, NULL);  // 假设这个函数可以处理NULL作为dishes参数
+
+            // 获取支付时间
+            time_t t2 = time(NULL);
+            struct tm *tm2 = localtime(&t2);
+            char paymentTime2[64];
+            strftime(paymentTime2, sizeof(paymentTime2), "%Y-%m-%d %H:%M:%S", tm2);
+
+            askPrintReceipt(tableNumber, totalAmount, NULL, paymentTime2);  // 假设这个函数可以处理NULL作为dishes参数
             break;
         case 3:
             // 返回上级菜单
@@ -112,7 +130,38 @@ void adminMenu() {
                 paymentSystem();
                 break;
             case 4:
-                //printReceipt(0, NULL);
+                printf(CYN "请输入桌号：\n" RESET);
+                int tableNumber;
+                scanf("%d", &tableNumber);
+
+                // 从文件中加载桌号信息
+                FILE* file = fopen("order_info.txt", "r");
+                if (file == NULL) {
+                    printf(RED "无法打开文件\n" RESET);
+                    return;
+                }
+
+                int found = 0;
+                double totalAmount;
+                int tempTableNumber, peopleNumber, numDishes;
+                int paid;
+                char orderTime[64];
+                while (fscanf(file, "%d %d %d %lf %d %s", &tempTableNumber, &peopleNumber, &numDishes, &totalAmount, &paid, orderTime) == 6) {
+                    if (tempTableNumber == tableNumber && paid == 0) {
+                        found = 1;
+                        break;
+                    }
+                }
+
+                fclose(file);
+
+                if (!found) {
+                    printf(RED "无效的桌号，请重新输入\n" RESET);
+                    sleep(5);
+                    return;
+                }
+
+                printReceipt(tableNumber, totalAmount, NULL, orderTime);  // 假设这个函数可以处理NULL作为dishes参数
                 break;
             case 5:
                 orderSystem();

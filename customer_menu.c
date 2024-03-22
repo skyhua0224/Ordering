@@ -22,11 +22,13 @@ void customerMenu() {
     int currentPeopleNumber = 0;
     int currentOrderCount = 0;
     double currentTotalAmount = 0;
+    int paid = 0;
+    char orderTime[64];
     FILE *orderInfoFile = fopen("order_info.txt", "r");
     if (orderInfoFile != NULL) {
-        while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount) == 4) {
-            if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) {
-                // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
+        while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount, &paid, orderTime) == 6) {
+            if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0 && paid == 0) {
+                // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，且未支付，那么跳过点菜过程，直接进入已下单过程
                 checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount);
                 fclose(orderInfoFile);
                 return;

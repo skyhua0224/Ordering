@@ -5,11 +5,13 @@
 #include "order.h"  // 假设你的订单定义在 order.h 文件中
 #include "color.h"  // 假设你的颜色定义在 color.h 文件中   
 
-void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char lines[1024][1024], int lineCount) {
+void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char lines[1024][1024], int lineCount, char* orderTime, char* paymentTime) {
       fprintf(stream, "===================================================\n");
       fprintf(stream, "                    SkyHua Virtual                 \n");
       fprintf(stream, "===================================================\n");
       fprintf(stream, "桌号：%d\n", tableNumber);
+      fprintf(stream, "下单时间：%s\n", orderTime);
+      fprintf(stream, "支付时间：%s\n", paymentTime);
       fprintf(stream, "---------------------------------------------------\n");
       fprintf(stream, " 菜品                单价    数量    小计\n");
       fprintf(stream, "---------------------------------------------------\n");
@@ -21,7 +23,7 @@ void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char
             double price = atof(strtok(NULL, " "));
             double subtotal = atof(strtok(NULL, " "));
             fprintf(stream, " %-20s%7.2f   %-8d%-8.2f\n",
-                                    dishName, price, quantity, subtotal);
+                                          dishName, price, quantity, subtotal);
             free(line);
       }
 
@@ -35,8 +37,8 @@ void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char
       fprintf(stream, "===================================================\n");
 }
 
-void printReceipt(int tableNumber) {
-    char buffer[1024];
+void printReceipt(int tableNumber, double totalAmount, Dish* dishes, char* paymentTime) {
+      char buffer[1024];
       char filename[20];
       sprintf(filename, "table_%d.txt", tableNumber);  // 生成文件名
 
@@ -52,58 +54,41 @@ void printReceipt(int tableNumber) {
             }
             fclose(tableFile);
 
-            // 从order_info.txt文件中读取总金额
-            FILE *orderFile = fopen("order_info.txt", "r");
-            double totalAmount = 0.0;
-            if (orderFile != NULL) {
-                  while (fgets(buffer, sizeof(buffer), orderFile) != NULL) {
-                        int currentTableNumber = atoi(strtok(buffer, " "));
-                        if (currentTableNumber == tableNumber) {
-                              strtok(NULL, " ");  // 跳过第二个字段
-                              strtok(NULL, " ");  // 跳过第三个字段
-                              totalAmount = atof(strtok(NULL, " "));  // 获取第四个字段（总金额）
-                              break;
-                        }
-                  }
-                  fclose(orderFile);
-            }
+            // 生成带有支付时间的小票文件名
+            char receiptFilename[64];
+            sprintf(receiptFilename, "receipt_%d_%s.txt", tableNumber, paymentTime);
 
-            sprintf(filename, "receipt_%d.txt", tableNumber);  // 生成文件名
-
-            FILE *receiptFile = fopen(filename, "w");
+            FILE *receiptFile = fopen(receiptFilename, "w");
+            char orderTime[64] = "";  // 将 orderTime 的定义移动到这里
             if (receiptFile != NULL) {
-                  printReceiptDetails(receiptFile, tableNumber, totalAmount, lines, lineCount);
+                  // 从 order_info.txt 文件中读取下单时间
+                  FILE *orderFile = fopen("order_info.txt", "r");
+                  if (orderFile != NULL) {
+                        while (fgets(buffer, sizeof(buffer), orderFile) != NULL) {
+                              int currentTableNumber = atoi(strtok(buffer, " "));
+                              if (currentTableNumber == tableNumber) {
+                                    strtok(NULL, " ");  // 跳过人数
+                                    strtok(NULL, " ");  // 跳过菜品数量
+                                    strtok(NULL, " ");  // 跳过总金额
+                                    strtok(NULL, " ");  // 跳过支付状态
+                                    char* tempOrderTime = strtok(NULL, " ");
+                                    if (tempOrderTime != NULL) {
+                                          strcpy(orderTime, tempOrderTime);
+                                    }
+                                    break;
+                              }
+                        }
+                        fclose(orderFile);
+                  }
+
+                  printReceiptDetails(receiptFile, tableNumber, totalAmount, lines, lineCount, orderTime, paymentTime);
                   fclose(receiptFile);
             } else {
-                  printf("无法打开文件 %s\n", filename);
+                  printf("无法打开文件 %s\n", receiptFilename);
             }
 
-            printReceiptDetails(stdout, tableNumber, totalAmount, lines, lineCount);
+            printReceiptDetails(stdout, tableNumber, totalAmount, lines, lineCount, orderTime, paymentTime);
       } else {
             printf("无法打开文件 %s\n", filename);
       }
-
-      // 删除订单信息
-      FILE *orderFile = NULL;
-      orderFile = fopen("order_info.txt", "r");
-      FILE *tempFile = fopen("temp.txt", "w");
-      if (orderFile != NULL && tempFile != NULL) {
-            while (fgets(buffer, sizeof(buffer), orderFile) != NULL) {
-                  int currentTableNumber = atoi(strtok(buffer, " "));
-                  if (currentTableNumber != tableNumber) {
-                        fprintf(tempFile, "%s", buffer);
-                  }
-            }
-            fclose(orderFile);
-            fclose(tempFile);
-            remove("order_info.txt");
-            rename("temp.txt", "order_info.txt");
-      }
-
-      // 删除桌号文件
-      sprintf(filename, "table_%d.txt", tableNumber);
-      remove(filename);
-
-      // 退出程序
-      exit(0);
 }

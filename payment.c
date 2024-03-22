@@ -3,19 +3,43 @@
 #include "color.h"
 #include "receipt.h"  // 包含 receipt.h 文件
 #include "sleep.h"  // 包含 sleep.h 文件
+#include "time.h"
+#include <stdlib.h>
+#include <string.h>
 
 void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes) {
+void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* paymentTime) {
     printf("是否打印小票？（1=是，0=否）：");
     int printReceiptChoice;
     scanf("%d", &printReceiptChoice);
     clearInputBuffer();
     if (printReceiptChoice == 1) {
-        printReceipt(tableNumber, totalAmount, dishes);
+        // 从 order_info.txt 文件中读取下单时间
+        FILE *orderFile = fopen("order_info.txt", "r");
+        char orderTime[64] = "";
+        if (orderFile != NULL) {
+            char buffer[1024];
+            while (fgets(buffer, sizeof(buffer), orderFile) != NULL) {
+                int currentTableNumber = atoi(strtok(buffer, " "));
+                if (currentTableNumber == tableNumber) {
+                    strtok(NULL, " ");  // 跳过人数
+                    strtok(NULL, " ");  // 跳过菜品数量
+                    strtok(NULL, " ");  // 跳过总金额
+                    strtok(NULL, " ");  // 跳过支付状态
+                    char* tempOrderTime = strtok(NULL, " ");
+                    if (tempOrderTime != NULL) {
+                        strcpy(orderTime, tempOrderTime);
+                    }
+                    break;
+                }
+            }
+            fclose(orderFile);
+        }
+        printReceipt(tableNumber, totalAmount, dishes, paymentTime);
         sleep(10);
     }
 }
@@ -44,7 +68,14 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, (double)((int)totalAmount));
-            askPrintReceipt(tableNumber, totalAmount, dishes);
+
+            // 获取支付时间
+            time_t t1 = time(NULL);
+            struct tm *tm1 = localtime(&t1);
+            char paymentTime1[64];
+            strftime(paymentTime1, sizeof(paymentTime1), "%Y-%m-%d_%H:%M:%S", tm1);
+
+            askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime1);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;
@@ -54,7 +85,14 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(RED "请使用" BLU "支付宝" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
-            askPrintReceipt(tableNumber, totalAmount, dishes);
+
+            // 获取支付时间
+            time_t t2 = time(NULL);
+            struct tm *tm2 = localtime(&t2);
+            char paymentTime2[64];
+            strftime(paymentTime2, sizeof(paymentTime2), "%Y-%m-%d %H:%M:%S", tm2);
+
+            askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime2);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;
@@ -64,7 +102,14 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(RED "请使用" GRN "微信" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
-            askPrintReceipt(tableNumber, totalAmount, dishes);
+
+            // 获取支付时间
+            time_t t3 = time(NULL);
+            struct tm *tm3 = localtime(&t3);
+            char paymentTime3[64];
+            strftime(paymentTime3, sizeof(paymentTime3), "%Y-%m-%d_%H:%M:%S", tm3);
+
+            askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime3);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;
@@ -74,7 +119,14 @@ void processPayment(int tableNumber, double totalAmount) {
             printf(RED "请使用" MAG "云闪付" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
             printf(GRN "实收：" YEL "%.2lf元\n" RESET, totalAmount);
-            askPrintReceipt(tableNumber, totalAmount, dishes);
+
+            // 获取支付时间
+            time_t t4 = time(NULL);
+            struct tm *tm4 = localtime(&t4);
+            char paymentTime4[64];
+            strftime(paymentTime4, sizeof(paymentTime4), "%Y-%m-%d_%H:%M:%S", tm4);
+
+            askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime4);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
             sleep(5);
             break;

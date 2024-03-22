@@ -9,6 +9,7 @@
 #include <string.h>
 #include "payment.h"
 #include "table.h"
+#include <time.h>
 
 void addOrder() {
   // 在这里实现加单功能
@@ -28,14 +29,16 @@ void placeOrder(int tableNumber, int peopleNumber) {
   int currentPeopleNumber = 0;   // 在这里声明currentPeopleNumber变量
   int currentOrderCount = 0;     // 在这里声明currentOrderCount变量
   double currentTotalAmount = 0; // 在这里声明currentTotalAmount变量
+  int paid = 0;                  // 在这里声明paid变量
+  char orderTime[64];            // 在这里声明orderTime变量
   FILE *orderInfoFile = fopen("order_info.txt", "r");
   if (orderInfoFile != NULL) {
-    while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber,
+    while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &currentTableNumber,
                   &currentPeopleNumber, &currentOrderCount,
-                  &currentTotalAmount) == 4) {
+                  &currentTotalAmount, &paid, orderTime) == 6) {
       if (currentTableNumber == tableNumber && currentOrderCount > 0 &&
-          currentTotalAmount > 0) {
-        // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
+          currentTotalAmount > 0 && paid == 0) {
+        // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，且未支付，那么跳过点菜过程，直接进入已下单过程
         checkout(currentTableNumber, currentPeopleNumber, currentOrderCount,
                  currentTotalAmount);
         fclose(orderInfoFile);
@@ -79,8 +82,15 @@ void placeOrder(int tableNumber, int peopleNumber) {
       orderInfoFile =
           fopen("order_info.txt",
                 "a"); // 使用"a"模式打开文件，以便在文件末尾添加新的订单信息
-      fprintf(orderInfoFile, "\n%d %d %d %.2lf", tableNumber, peopleNumber,
-              orderCount, totalAmount); // 在新的一行中写入订单信息
+
+      // 获取当前时间
+      time_t t = time(NULL);
+      struct tm *tm = localtime(&t);
+      char timeStr[64];
+      strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H:%M:%S", tm);
+
+      fprintf(orderInfoFile, "\n%d %d %d %.2lf %d %s", tableNumber, peopleNumber,
+              orderCount, totalAmount, 0, timeStr); // 在新的一行中写入订单信息，其中0表示未支付
       fclose(orderInfoFile);
 
       checkout(tableNumber, peopleNumber, orderCount, totalAmount);
@@ -260,9 +270,6 @@ void placeOrder(int tableNumber, int peopleNumber) {
         fclose(tableFile);
       }
     }
-
-    // 保存更新后的菜品信息到dish_info.txt文件中
-    // saveOrderInfo(tableNumber, peopleNumber, orderCount, totalAmount);
   }
 }
 
@@ -292,7 +299,6 @@ void checkout(int tableNumber, int peopleNumber, int orderCount, double totalAmo
       break;
     case 3:
       processPayment(tableNumber, totalAmount);
-      askPrintReceipt(tableNumber, totalAmount, dishes);  // 假设 dishes 是你的菜品数组
       return;
     default:
       printf(RED "无效的选项，请重新选择\n" RESET);
