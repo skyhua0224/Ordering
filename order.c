@@ -4,12 +4,12 @@
 #include "main_menu.h"
 #include "order_info.h"
 #include "payment.h"
+#include "table.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "payment.h"
-#include "table.h"
 #include <time.h>
+
 
 void addOrder() {
   // 在这里实现加单功能
@@ -34,8 +34,8 @@ void placeOrder(int tableNumber, int peopleNumber) {
   FILE *orderInfoFile = fopen("order_info.txt", "r");
   if (orderInfoFile != NULL) {
     while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &currentTableNumber,
-                  &currentPeopleNumber, &currentOrderCount,
-                  &currentTotalAmount, &paid, orderTime) == 6) {
+                  &currentPeopleNumber, &currentOrderCount, &currentTotalAmount,
+                  &paid, orderTime) == 6) {
       if (currentTableNumber == tableNumber && currentOrderCount > 0 &&
           currentTotalAmount > 0 && paid == 0) {
         // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，且未支付，那么跳过点菜过程，直接进入已下单过程
@@ -50,9 +50,10 @@ void placeOrder(int tableNumber, int peopleNumber) {
 
   int dishIndex = 0; // 在这里声明dishIndex变量
 
-  while (1) { 
+  while (1) {
     printf(CLEAR_SCREEN_ANSI);
-    printf(BWHT "********** 桌号%d，您已点了%d道菜，目前的金额为%.2lf元 **********\n" RESET,
+    printf(BWHT "********** 桌号%d，您已点了%d道菜，目前的金额为%.2lf元 "
+                "**********\n" RESET,
            tableNumber, orderCount, totalAmount);
 
     printf("\n" BYEL "********** 菜品类别 **********\n" RESET);
@@ -60,7 +61,8 @@ void placeOrder(int tableNumber, int peopleNumber) {
       printf(BGRN "%d. %s\n" RESET, i + 1, categories[i]);
     }
 
-    printf(BBLU "请输入要点的菜品类别的编号（输入0下单，输入-1删除已点菜品，输入-2退出点菜）：" RESET);
+    printf(BBLU "请输入要点的菜品类别的编号（输入0下单，输入-"
+                "1删除已点菜品，输入-2退出点菜）：" RESET);
     int categoryChoice;
     scanf("%d", &categoryChoice);
 
@@ -89,99 +91,101 @@ void placeOrder(int tableNumber, int peopleNumber) {
       char timeStr[64];
       strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H:%M:%S", tm);
 
-      fprintf(orderInfoFile, "\n%d %d %d %.2lf %d %s", tableNumber, peopleNumber,
-              orderCount, totalAmount, 0, timeStr); // 在新的一行中写入订单信息，其中0表示未支付
+      fprintf(orderInfoFile, "\n%d %d %d %.2lf %d %s", tableNumber,
+              peopleNumber, orderCount, totalAmount, 0,
+              timeStr); // 在新的一行中写入订单信息，其中0表示未支付
       fclose(orderInfoFile);
 
       checkout(tableNumber, peopleNumber, orderCount, totalAmount);
     }
 
-  if (categoryChoice == -1) {
-    // 从文件中读取已点的菜品
-    char filename[20];
-    sprintf(filename, "table_%d.txt", tableNumber);
-    FILE *tableFile = fopen(filename, "r");
-    if (tableFile != NULL) {
-      char buffer[1024];
-      char lines[1024][1024];
-      int lineCount = 0;
-      while (fgets(buffer, sizeof(buffer), tableFile) != NULL) {
-        buffer[strcspn(buffer, "\n")] = 0; // 去掉换行符
-        strcpy(lines[lineCount], buffer);
-        lineCount++;
-      }
-      fclose(tableFile);
-
-      // 显示所有已点的菜品
-      printf("\n" BYEL "********** 已点菜品 **********\n" RESET);
-      for (int i = 0; i < lineCount; i++) {
-        char *line = strdup(lines[i]);
-        if (line == NULL) {
-          printf(RED "内存不足，无法删除菜品\n" RESET);
-          continue;
+    if (categoryChoice == -1) {
+      // 从文件中读取已点的菜品
+      char filename[20];
+      sprintf(filename, "table_%d.txt", tableNumber);
+      FILE *tableFile = fopen(filename, "r");
+      if (tableFile != NULL) {
+        char buffer[1024];
+        char lines[1024][1024];
+        int lineCount = 0;
+        while (fgets(buffer, sizeof(buffer), tableFile) != NULL) {
+          buffer[strcspn(buffer, "\n")] = 0; // 去掉换行符
+          strcpy(lines[lineCount], buffer);
+          lineCount++;
         }
-        char *dishName = strtok(line, " ");
-        int quantity = atoi(strtok(NULL, " "));
-        printf(BGRN "%d. %s x%d\n" RESET, i + 1, dishName, quantity);
-        free(line);
-      }
+        fclose(tableFile);
 
-      // 让用户选择一个已点的菜品来删除
-      printf(BBLU "请输入要删除的菜品的编号（按0返回）：" RESET);
-      int dishChoice;
-      scanf("%d", &dishChoice);
-      dishChoice--; // 转换为数组索引
-
-      if (dishChoice >= 0 && dishChoice < lineCount) {
-        // 找到要删除的菜品名称
-        char *line = strdup(lines[dishChoice]);
-        if (line == NULL) {
-          printf(RED "内存不足，无法删除菜品\n" RESET);
-          continue;
-        }
-        char *dishToDelete = strdup(strtok(line, " "));
-        int quantity = atoi(strtok(NULL, " "));
-        double price = atof(strtok(NULL, " "));
-        double total = atof(strtok(NULL, " "));
-        free(line);
-
-        if (quantity > 1) {
-          // 如果菜品数量大于1，只删除一个
-          quantity--;
-          total -= price;
-          sprintf(lines[dishChoice], "%s %d %.2lf %.2lf", dishToDelete, quantity, price, total);
-        } else {
-          // 如果菜品数量等于1，删除整行
-          for (int i = dishChoice; i < lineCount - 1; i++) {
-            strcpy(lines[i], lines[i + 1]);
+        // 显示所有已点的菜品
+        printf("\n" BYEL "********** 已点菜品 **********\n" RESET);
+        for (int i = 0; i < lineCount; i++) {
+          char *line = strdup(lines[i]);
+          if (line == NULL) {
+            printf(RED "内存不足，无法删除菜品\n" RESET);
+            continue;
           }
-          lineCount--;
+          char *dishName = strtok(line, " ");
+          int quantity = atoi(strtok(NULL, " "));
+          printf(BGRN "%d. %s x%d\n" RESET, i + 1, dishName, quantity);
+          free(line);
         }
-        free(dishToDelete);
 
-        // 将更新后的内容写回到文件中
-        tableFile = fopen(filename, "w");
-        if (tableFile != NULL) {
-          for (int i = 0; i < lineCount; i++) {
-            // 在写入文件之前，先检查你要写入的数据是否正确
-            if (strstr(lines[i], "�") == NULL) {
-              fprintf(tableFile, "%s\n", lines[i]); // 添加换行符
+        // 让用户选择一个已点的菜品来删除
+        printf(BBLU "请输入要删除的菜品的编号（按0返回）：" RESET);
+        int dishChoice;
+        scanf("%d", &dishChoice);
+        dishChoice--; // 转换为数组索引
+
+        if (dishChoice >= 0 && dishChoice < lineCount) {
+          // 找到要删除的菜品名称
+          char *line = strdup(lines[dishChoice]);
+          if (line == NULL) {
+            printf(RED "内存不足，无法删除菜品\n" RESET);
+            continue;
+          }
+          char *dishToDelete = strdup(strtok(line, " "));
+          int quantity = atoi(strtok(NULL, " "));
+          double price = atof(strtok(NULL, " "));
+          double total = atof(strtok(NULL, " "));
+          free(line);
+
+          if (quantity > 1) {
+            // 如果菜品数量大于1，只删除一个
+            quantity--;
+            total -= price;
+            sprintf(lines[dishChoice], "%s %d %.2lf %.2lf", dishToDelete,
+                    quantity, price, total);
+          } else {
+            // 如果菜品数量等于1，删除整行
+            for (int i = dishChoice; i < lineCount - 1; i++) {
+              strcpy(lines[i], lines[i + 1]);
             }
+            lineCount--;
           }
-          fclose(tableFile);
+          free(dishToDelete);
+
+          // 将更新后的内容写回到文件中
+          tableFile = fopen(filename, "w");
+          if (tableFile != NULL) {
+            for (int i = 0; i < lineCount; i++) {
+              // 在写入文件之前，先检查你要写入的数据是否正确
+              if (strstr(lines[i], "�") == NULL) {
+                fprintf(tableFile, "%s\n", lines[i]); // 添加换行符
+              }
+            }
+            fclose(tableFile);
+          }
+
+          // 找到对应的菜品价格，并从总金额中减去该价格
+          totalAmount -= price;
+          orderCount--; // 在这里将orderCount变量减1
+
+          printf(GRN "已删除菜品：%s\n" RESET, dishToDelete);
+        } else {
+          printf(RED "无效的选项，请重新选择\n" RESET);
         }
-
-        // 找到对应的菜品价格，并从总金额中减去该价格
-        totalAmount -= price;
-        orderCount--; // 在这里将orderCount变量减1
-
-        printf(GRN "已删除菜品：%s\n" RESET, dishToDelete);
-      } else {
-        printf(RED "无效的选项，请重新选择\n" RESET);
       }
+      continue;
     }
-    continue;
-  }
 
     // 让用户选择一个菜品
     dishIndex = selectDishByCategory(categories[categoryChoice - 1]);
@@ -230,7 +234,8 @@ void placeOrder(int tableNumber, int peopleNumber) {
       int lineCount = 0;
       tableFile = fopen(filename, "r");
       if (tableFile != NULL) {
-        while (fgets(lines[lineCount], sizeof(lines[lineCount]), tableFile) != NULL) {
+        while (fgets(lines[lineCount], sizeof(lines[lineCount]), tableFile) !=
+               NULL) {
           lines[lineCount][strlen(lines[lineCount]) - 1] = '\0'; // 去掉换行符
           lineCount++;
         }
@@ -247,7 +252,8 @@ void placeOrder(int tableNumber, int peopleNumber) {
           double total = atof(strtok(NULL, " "));
           quantity++;
           total += price;
-          sprintf(lines[i], "%s %d %.2lf %.2lf", dishName, quantity, price, total);
+          sprintf(lines[i], "%s %d %.2lf %.2lf", dishName, quantity, price,
+                  total);
           free(line);
           break;
         }
@@ -266,22 +272,26 @@ void placeOrder(int tableNumber, int peopleNumber) {
       // 如果没有找到菜品，我们需要在文件末尾添加新的一行
       tableFile = fopen(filename, "a");
       if (tableFile != NULL) {
-        fprintf(tableFile, "%s 1 %.2lf %.2lf\n", dishes[dishIndex].name, dishes[dishIndex].price, dishes[dishIndex].price);
+        fprintf(tableFile, "%s 1 %.2lf %.2lf\n", dishes[dishIndex].name,
+                dishes[dishIndex].price, dishes[dishIndex].price);
         fclose(tableFile);
       }
     }
   }
 }
 
-void checkout(int tableNumber, int peopleNumber, int orderCount, double totalAmount) {
+void checkout(int tableNumber, int peopleNumber, int orderCount,
+              double totalAmount) {
   printf(CLEAR_SCREEN_ANSI);
-  printf(BWHT "********** 已下单！您已点了%d道菜，目前的金额为%.2lf元 **********\n" RESET, orderCount, totalAmount);
+  printf(BWHT "********** 已下单！您已点了%d道菜，目前的金额为%.2lf元 "
+              "**********\n" RESET,
+         orderCount, totalAmount);
 
   while (1) {
     printf("\n" BYEL "********** 选项 **********\n" RESET);
-    printf(BGRN "1. 加菜\n" RESET);
-    printf(BGRN "2. 查看餐品状态\n" RESET);
-    printf(BGRN "3. 去支付\n" RESET);
+    printf(BGRN "1. 加菜(TODO)\n" RESET);         // TODO
+    printf(BGRN "2. 查看餐品状态(TODO)\n" RESET); // TODO
+    printf(BGRN "3. 去支付(bug)\n" RESET);        // TODO
     printf(BBLU "请输入选项的编号（输入0退出）：" RESET);
 
     int choice;

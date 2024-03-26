@@ -45,12 +45,12 @@ void manageTable() {
 
     while(1) {
         printf("\n********** " YEL "桌台管理" RESET " **********\n");
-        printf(BLU "1. 预订桌台\n" RESET);
-        printf(GRN "2. 加单\n" RESET);
-        printf(CYN "3. 撤单\n" RESET);
-        printf(YEL "4. 桌台人数\n" RESET);
-        printf(GRA "5. 桌台状态\n" RESET);
-        printf(MAG "6. 查看桌台价格\n" RESET);
+        printf(BLU "1. 预订桌台(TODO)\n" RESET);//TODO
+        printf(GRN "2. 加单(TODO)\n" RESET);//TODO
+        printf(CYN "3. 撤单(TODO)\n" RESET);//TODO
+        printf(YEL "4. 桌台人数(TODO)\n" RESET);//TODO
+        printf(GRA "5. 桌台状态(TODO)\n" RESET);//TODO
+        printf(MAG "6. 查看桌台价格(TODO)\n" RESET);//TODO
         printf(RED "7. 返回管理员菜单\n" RESET);
         printf("8. 退出系统\n");
 

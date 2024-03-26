@@ -111,9 +111,9 @@ void adminMenu() {
         printf("\n********** " YEL "管理员菜单" RESET " **********\n");
         printf(BLU "1. 菜品信息管理\n" RESET);
         printf(GRN "2. 桌台管理\n" RESET);
-        printf(CYN "3. 支付系统\n" RESET);
-        printf(MAG "4. 小票打印\n" RESET);
-        printf(RED "5. 点菜系统\n" RESET);
+        printf(CYN "3. 支付系统(bug)\n" RESET);//TODO
+        printf(MAG "4. 小票打印(bug)\n" RESET);//TODO
+        printf(RED "5. 点菜系统(TODO)\n" RESET);//TODO
         printf("6. 返回主菜单\n");
         printf("请选择一个选项：");
 
