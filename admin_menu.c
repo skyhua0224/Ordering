@@ -8,6 +8,7 @@
 #include "table.h"
 #include "receipt.h"
 #include <time.h>
+#include "adminOrder.h"
 
 void dishMenu(); 
 
@@ -111,9 +112,9 @@ void adminMenu() {
         printf("\n********** " YEL "管理员菜单" RESET " **********\n");
         printf(BLU "1. 菜品信息管理\n" RESET);
         printf(GRN "2. 桌台管理\n" RESET);
-        printf(CYN "3. 支付系统(bug)\n" RESET);//TODO
-        printf(MAG "4. 小票打印(bug)\n" RESET);//TODO
-        printf(RED "5. 点菜系统(TODO)\n" RESET);//TODO
+        printf(CYN "3. 支付系统\n" RESET);
+        printf(MAG "4. 小票打印\n" RESET);
+        printf(RED "5. 点菜系统\n" RESET);
         printf("6. 返回主菜单\n");
         printf("请选择一个选项：");
 
@@ -164,7 +165,7 @@ void adminMenu() {
                 printReceipt(tableNumber, totalAmount, NULL, orderTime);  // 假设这个函数可以处理NULL作为dishes参数
                 break;
             case 5:
-                orderSystem();
+                adminOrderSystem();
                 break;
             case 6:
                 return;

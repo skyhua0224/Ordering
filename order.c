@@ -317,7 +317,7 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
     printf("\n" BYEL "********** 选项 **********\n" RESET);
     printf(BGRN "1. 加菜\n" RESET);
     printf(BGRN "2. 查看餐品状态(TODO)\n" RESET); // TODO
-    printf(BGRN "3. 去支付(bug)\n" RESET);        // TODO
+    printf(BGRN "3. 去支付\n" RESET);
     printf(BBLU "请输入选项的编号（输入0退出）：" RESET);
 
     int choice;
