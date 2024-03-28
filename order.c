@@ -115,7 +115,7 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish) {
       time_t t = time(NULL);
       struct tm *tm = localtime(&t);
       char timeStr[64];
-      strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H:%M:%S", tm);
+      strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H_%M_%S", tm);
 
       fprintf(orderInfoFile, "\n%d %d %d %.2lf %d %s", tableNumber,
               peopleNumber, orderCount, totalAmount, 0,
