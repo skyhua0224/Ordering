@@ -10,45 +10,49 @@
 #include <string.h>
 #include <time.h>
 
+void addOrder(){
 
-void addOrder() {
-  // 在这里实现加单功能
 }
+void cancelOrder(){
 
-void cancelOrder() {
-  // 在这里实现撤单功能
 }
-void placeOrder(int tableNumber, int peopleNumber) {
-  // 首先，我们需要从dish_info.txt文件中加载菜品信息
+void placeOrder(int tableNumber, int peopleNumber, int isAddDish) {
+  // 加载菜品信息
   loadDishes("dish_info.txt");
 
   // 从order_info.txt文件中加载订单信息
-  int orderCount = 0;            // 在这里声明orderCount变量
-  double totalAmount = 0;        // 在这里声明totalAmount变量
-  int currentTableNumber = 0;    // 在这里声明currentTableNumber变量
-  int currentPeopleNumber = 0;   // 在这里声明currentPeopleNumber变量
-  int currentOrderCount = 0;     // 在这里声明currentOrderCount变量
-  double currentTotalAmount = 0; // 在这里声明currentTotalAmount变量
-  int paid = 0;                  // 在这里声明paid变量
-  char orderTime[64];            // 在这里声明orderTime变量
+  int orderCount = 0;
+  double totalAmount = 0;
+  int currentTableNumber = 0;
+  int currentPeopleNumber = 0;
+  int currentOrderCount = 0;
+  double currentTotalAmount = 0;
+  int paid = 0;
+  char orderTime[64];
   FILE *orderInfoFile = fopen("order_info.txt", "r");
   if (orderInfoFile != NULL) {
     while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &currentTableNumber,
                   &currentPeopleNumber, &currentOrderCount, &currentTotalAmount,
                   &paid, orderTime) == 6) {
       if (currentTableNumber == tableNumber && currentOrderCount > 0 &&
-          currentTotalAmount > 0 && paid == 0) {
-        // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，且未支付，那么跳过点菜过程，直接进入已下单过程
-        checkout(currentTableNumber, currentPeopleNumber, currentOrderCount,
-                 currentTotalAmount);
-        fclose(orderInfoFile);
-        return;
+          currentTotalAmount > 0) {
+        if (!isAddDish && paid == 0) {
+          // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，且未支付，那么跳过点菜过程，直接进入已下单过程
+          checkout(currentTableNumber, currentPeopleNumber, currentOrderCount,
+                   currentTotalAmount);
+          fclose(orderInfoFile);
+          return;
+        } else if (isAddDish) {
+          // 如果是加菜操作，设置orderCount和totalAmount的值
+          orderCount = currentOrderCount;
+          totalAmount = currentTotalAmount;
+        }
       }
     }
     fclose(orderInfoFile);
   }
 
-  int dishIndex = 0; // 在这里声明dishIndex变量
+  int dishIndex = 0;
 
   while (1) {
     printf(CLEAR_SCREEN_ANSI);
@@ -80,7 +84,29 @@ void placeOrder(int tableNumber, int peopleNumber) {
     }
 
     if (categoryChoice == 0) {
-      // 在下单时，将订单信息保存到order_info.txt文件中
+      // 在下单时，先从order_info.txt文件中删除旧的订单信息
+      FILE *tempFile = fopen("temp.txt", "w");
+      orderInfoFile = fopen("order_info.txt", "r");
+      if (orderInfoFile != NULL && tempFile != NULL) {
+        while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &currentTableNumber,
+                      &currentPeopleNumber, &currentOrderCount, &currentTotalAmount,
+                      &paid, orderTime) == 6) {
+          if (currentTableNumber != tableNumber || paid != 0) {
+            // 如果不是当前桌号的订单，或者已经支付，那么将这一行写入新的文件中
+            fprintf(tempFile, "%d %d %d %.2lf %d %s\n", currentTableNumber,
+                    currentPeopleNumber, currentOrderCount, currentTotalAmount, paid,
+                    orderTime);
+          }
+        }
+        fclose(orderInfoFile);
+        fclose(tempFile);
+
+        // 删除旧的文件，并将新的文件重命名为order_info.txt
+        remove("order_info.txt");
+        rename("temp.txt", "order_info.txt");
+      }
+
+      // 然后，将新的订单信息保存到order_info.txt文件中
       orderInfoFile =
           fopen("order_info.txt",
                 "a"); // 使用"a"模式打开文件，以便在文件末尾添加新的订单信息
@@ -289,7 +315,7 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
 
   while (1) {
     printf("\n" BYEL "********** 选项 **********\n" RESET);
-    printf(BGRN "1. 加菜(TODO)\n" RESET);         // TODO
+    printf(BGRN "1. 加菜\n" RESET);
     printf(BGRN "2. 查看餐品状态(TODO)\n" RESET); // TODO
     printf(BGRN "3. 去支付(bug)\n" RESET);        // TODO
     printf(BBLU "请输入选项的编号（输入0退出）：" RESET);
@@ -302,7 +328,7 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
       mainMenu();
       return;
     case 1:
-      placeOrder(tableNumber, peopleNumber);
+      placeOrder(tableNumber, peopleNumber, 1);
       return;
     case 2:
       // 在这里实现查看餐品状态的功能

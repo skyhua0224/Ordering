@@ -65,5 +65,5 @@ void customerMenu() {
         peopleNumber = peopleNumber <= 4 ? peopleNumber + 8 : 12;
     }
 
-    placeOrder(tableNumber, peopleNumber);
+    placeOrder(tableNumber, peopleNumber, 0);
 }
