@@ -87,6 +87,11 @@ void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* pa
         } else {
             printf("无法打开文件 order_info.txt 或 temp.txt\n");
         }
+
+        // 删除对应的 table_桌号.txt 文件
+        char tableFilename[20];
+        sprintf(tableFilename, "table_%d.txt", tableNumber);
+        remove(tableFilename);
     }
     exit(0);
 }

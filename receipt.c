@@ -54,33 +54,33 @@ void printReceipt(int tableNumber, double totalAmount, Dish* dishes, char* payme
             }
             fclose(tableFile);
 
-            // 生成带有支付时间的小票文件名
+            char orderTime[64] = "";  // 将 orderTime 的定义移动到这里
+            // 从 order_info.txt 文件中读取下单时间
+            FILE *orderFile = fopen("order_info.txt", "r");
+            if (orderFile != NULL) {
+                  while (fgets(buffer, sizeof(buffer), orderFile) != NULL) {
+                        int currentTableNumber = atoi(strtok(buffer, " "));
+                        if (currentTableNumber == tableNumber) {
+                              strtok(NULL, " ");  // 跳过人数
+                              strtok(NULL, " ");  // 跳过菜品数量
+                              strtok(NULL, " ");  // 跳过总金额
+                              strtok(NULL, " ");  // 跳过支付状态
+                              char* tempOrderTime = strtok(NULL, " ");
+                              if (tempOrderTime != NULL) {
+                                    strcpy(orderTime, tempOrderTime);
+                              }
+                              break;
+                        }
+                  }
+                  fclose(orderFile);
+            }
+
+            // 生成带有下单时间的小票文件名
             char receiptFilename[64];
-            sprintf(receiptFilename, "receipt_%d_%s.txt", tableNumber, paymentTime);
+            sprintf(receiptFilename, "receipt_%d_%s.txt", tableNumber, orderTime);
 
             FILE *receiptFile = fopen(receiptFilename, "w");
-            char orderTime[64] = "";  // 将 orderTime 的定义移动到这里
             if (receiptFile != NULL) {
-                  // 从 order_info.txt 文件中读取下单时间
-                  FILE *orderFile = fopen("order_info.txt", "r");
-                  if (orderFile != NULL) {
-                        while (fgets(buffer, sizeof(buffer), orderFile) != NULL) {
-                              int currentTableNumber = atoi(strtok(buffer, " "));
-                              if (currentTableNumber == tableNumber) {
-                                    strtok(NULL, " ");  // 跳过人数
-                                    strtok(NULL, " ");  // 跳过菜品数量
-                                    strtok(NULL, " ");  // 跳过总金额
-                                    strtok(NULL, " ");  // 跳过支付状态
-                                    char* tempOrderTime = strtok(NULL, " ");
-                                    if (tempOrderTime != NULL) {
-                                          strcpy(orderTime, tempOrderTime);
-                                    }
-                                    break;
-                              }
-                        }
-                        fclose(orderFile);
-                  }
-
                   printReceiptDetails(receiptFile, tableNumber, totalAmount, lines, lineCount, orderTime, paymentTime);
                   fclose(receiptFile);
             } else {
