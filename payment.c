@@ -24,15 +24,16 @@ void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* pa
         if (orderFile != NULL) {
             char buffer[1024];
             while (fgets(buffer, sizeof(buffer), orderFile) != NULL) {
-                int currentTableNumber = atoi(strtok(buffer, " "));
+                char* token = strtok(buffer, " ");
+                if (token == NULL) continue;
+                int currentTableNumber = atoi(token);
                 if (currentTableNumber == tableNumber) {
-                    strtok(NULL, " ");  // 跳过人数
-                    strtok(NULL, " ");  // 跳过菜品数量
-                    strtok(NULL, " ");  // 跳过总金额
-                    strtok(NULL, " ");  // 跳过支付状态
-                    char* tempOrderTime = strtok(NULL, " ");
-                    if (tempOrderTime != NULL) {
-                        strcpy(orderTime, tempOrderTime);
+                    for (int i = 0; i < 4; i++) {
+                        token = strtok(NULL, " ");
+                        if (token == NULL) break;
+                    }
+                    if (token != NULL) {
+                        strcpy(orderTime, token);
                     }
                     break;
                 }
@@ -41,7 +42,53 @@ void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* pa
         }
         printReceipt(tableNumber, totalAmount, dishes, paymentTime);
         sleep(10);
+
+        // 在打印完小票之后，将order_info.txt文件中的对应订单信息，修改为已支付状态
+        FILE *orderInfoFile = fopen("order_info.txt", "r");
+        FILE *tempFile = fopen("temp.txt", "w");
+        if (orderInfoFile != NULL && tempFile != NULL) {
+            char buffer[1024];
+            while (fgets(buffer, sizeof(buffer), orderInfoFile) != NULL) {
+                char* token = strtok(buffer, " ");
+                if (token == NULL) continue;
+                int currentTableNumber = atoi(token);
+
+                token = strtok(NULL, " ");
+                if (token == NULL) continue;
+                int currentPeopleNumber = atoi(token);
+
+                token = strtok(NULL, " ");
+                if (token == NULL) continue;
+                int currentOrderCount = atoi(token);
+
+                token = strtok(NULL, " ");
+                if (token == NULL) continue;
+                double currentTotalAmount = atof(token);
+
+                token = strtok(NULL, " ");
+                if (token == NULL) continue;
+                int paid = atoi(token);
+
+                token = strtok(NULL, " ");
+                if (token == NULL) continue;
+                char orderTime[64];
+                strcpy(orderTime, token);
+
+                if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0 && paid == 0) {
+                    fprintf(tempFile, "%d %d %d %.2lf %d %s", currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount, 1, orderTime);
+                } else {
+                    fprintf(tempFile, "%d %d %d %.2lf %d %s", currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount, paid, orderTime);
+                }
+            }
+            fclose(orderInfoFile);
+            fclose(tempFile);
+            remove("order_info.txt");
+            rename("temp.txt", "order_info.txt");
+        } else {
+            printf("无法打开文件 order_info.txt 或 temp.txt\n");
+        }
     }
+    exit(0);
 }
 
 void processPayment(int tableNumber, double totalAmount) {
