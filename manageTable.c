@@ -103,8 +103,7 @@ void addOrder(){
         while(1)
         {
             fscanf(orderInfoFile,"%d %d %d %lf %d %s",
-            &latablenum,&peoplenum,&dishnum,&dishnum,&price,&status,ordertime);
-            if(latablenum==tablenum)
+                &latablenum, &peoplenum, &dishnum, &price, &status, ordertime);
             break;
         }    
     }
