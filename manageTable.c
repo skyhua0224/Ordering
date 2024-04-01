@@ -323,10 +323,10 @@ void cancelOrder(){
         fclose(orderInfoFile);
         fclose(tempFile);
         
-        if(found)
+        if(found)  // 删除原文件并将临时文件重命名为原文件
         {
-            remove("order_info.txt"); // 删除原文件
-            rename("temp.txt", "order_info.txt"); // 将临时文件重命名为原文件
+            remove("order_info.txt"); 
+            rename("temp.txt", "order_info.txt"); 
             printf("成功撤单\n");
         }
         else
