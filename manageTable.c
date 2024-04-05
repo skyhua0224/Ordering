@@ -95,13 +95,35 @@ void addOrder(){
     char ordertime[100];
     printf("请输入桌台号：");
     scanf("%d",&tablenum);
+
+    //检查桌台是否支付，是则返回到上一步
+    FILE *orderInfoFile = fopen("order_info.txt", "r");
+    if(orderInfoFile != NULL)
+    {
+        //找到桌台
+        while(1)
+        {
+            fscanf(orderInfoFile,"%d %d %d %.2lf %d %s",
+            &latablenum,&peoplenum,&dishnum,&dishnum,&price,&status,ordertime);
+            if(latablenum==tablenum)
+            break;
+        }    
+
+        if(status == 1)
+        {
+            printf("\e[1;1H\e[2J");//清屏
+            printf("该桌台已经支付完成，请重新下单。");
+            return;//返回上级菜单
+        }
+    }
+
     FILE *orderInfoFile = fopen("order_info.txt", "r");
     if (orderInfoFile != NULL) 
     {
         //找到桌台
         while(1)
         {
-            fscanf(orderInfoFile,"%d %d %d %lf %d %s",
+            fscanf(orderInfoFile,"%d %d %d %.2lf %d %s",
             &latablenum,&peoplenum,&dishnum,&dishnum,&price,&status,ordertime);
             if(latablenum==tablenum)
             break;
@@ -149,7 +171,7 @@ void addOrder(){
                 orderInfoFile = fopen("order_info.txt", "r");
                 if (orderInfoFile != NULL && tempFile != NULL) 
                 {
-                    while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &latablenum,
+                    while (fscanf(orderInfoFile, "%d %d %d %.2lf %d %s", &latablenum,
                     &peoplenum, &dishnum, &price,
                     &status, ordertime) == 6) 
                     {
@@ -327,7 +349,17 @@ void cancelOrder(){
         {
             remove("order_info.txt"); 
             rename("temp.txt", "order_info.txt"); 
+            char filename[20];
+            sprintf(filename, "table_%d.txt", tablenum);
+            FILE *tableFile = fopen(filename, "r");
+            if (tableFile != NULL) 
+            {
+                // 如果文件存在，关闭文件并删除它
+                fclose(tableFile);
+                remove(filename);
+            }
             printf("成功撤单\n");
+            sleep(5);
         }
         else
         {
