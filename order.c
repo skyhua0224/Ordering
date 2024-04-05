@@ -16,7 +16,7 @@ void addOrder(){
 void cancelOrder(){
 
 }
-void placeOrder(int tableNumber, int peopleNumber, int isAddDish) {
+void placeOrder(int tableNumber, int peopleNumber, int isAddDish,int ifpreorder) {
   // 加载菜品信息
   loadDishes("dish_info.txt");
 
@@ -39,7 +39,7 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish) {
         if (!isAddDish && paid == 0) {
           // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，且未支付，那么跳过点菜过程，直接进入已下单过程
           checkout(currentTableNumber, currentPeopleNumber, currentOrderCount,
-                   currentTotalAmount);
+                   currentTotalAmount,0);
           fclose(orderInfoFile);
           return;
         } else if (isAddDish) {
@@ -122,7 +122,7 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish) {
               timeStr); // 在新的一行中写入订单信息，其中0表示未支付
       fclose(orderInfoFile);
 
-      checkout(tableNumber, peopleNumber, orderCount, totalAmount);
+      checkout(tableNumber, peopleNumber, orderCount, totalAmount,ifpreorder);
     }
 
     if (categoryChoice == -1) {
@@ -307,11 +307,14 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish) {
 }
 
 void checkout(int tableNumber, int peopleNumber, int orderCount,
-              double totalAmount) {
+              double totalAmount,int ifpreorder) {
   printf(CLEAR_SCREEN_ANSI);
   printf(BWHT "********** 已下单！您已点了%d道菜，目前的金额为%.2lf元 "
               "**********\n" RESET,
          orderCount, totalAmount);
+
+  if(ifpreorder==1)
+  return 0;
 
   while (1) {
     printf("\n" BYEL "********** 选项 **********\n" RESET);
@@ -328,7 +331,7 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
       mainMenu();
       return;
     case 1:
-      placeOrder(tableNumber, peopleNumber, 1);
+      placeOrder(tableNumber, peopleNumber, 1,0);
       return;
     case 2:
       // 在这里实现查看餐品状态的功能

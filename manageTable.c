@@ -46,7 +46,7 @@ void reserveTable() {
         while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount) == 4) {
             if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) {
                 // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
-                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount);
+                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount,0);
                 fclose(orderInfoFile);
                 return;
             }
@@ -82,7 +82,9 @@ void reserveTable() {
         peopleNumber = peopleNumber <= 4 ? peopleNumber + 8 : 12;
     }
 
-    placeOrder(tableNumber, peopleNumber,0);
+    placeOrder(tableNumber, peopleNumber,0,1);
+    printf("预定成功！");
+    sleep(5);
 }
 
 void addOrder(){
@@ -204,7 +206,7 @@ void addOrder(){
                         timeStr); // 在新的一行中写入订单信息，其中0表示未支付
                 fclose(orderInfoFile);
 
-                checkout(tablenum, peoplenum, dishnum, price);
+                checkout(tablenum, peoplenum, dishnum, price,0);
             }
             // 让用户选择一个菜品
         dishIndex = selectDishByCategory(categories[categoryChoice - 1]);
