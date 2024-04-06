@@ -320,8 +320,7 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
   while (1) {
     printf("\n" BYEL "********** 选项 **********\n" RESET);
     printf(BGRN "1. 加菜\n" RESET);
-    printf(BGRN "2. 查看餐品状态(TODO)\n" RESET); // TODO
-    printf(BGRN "3. 去支付\n" RESET);
+    printf(BGRN "2. 去支付\n" RESET);
     printf(BBLU "请输入选项的编号（输入0退出）：" RESET);
 
     int choice;
@@ -335,9 +334,6 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
       placeOrder(tableNumber, peopleNumber, 1, 0);
       return;
     case 2:
-      // 在这里实现查看餐品状态的功能
-      break;
-    case 3:
       processPayment(tableNumber, totalAmount);
       return;
     default:
