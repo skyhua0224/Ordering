@@ -10,12 +10,6 @@
 #include <string.h>
 #include <time.h>
 
-void addOrder(){
-
-}
-void cancelOrder(){
-
-}
 void placeOrder(int tableNumber, int peopleNumber, int isAddDish) {
   // 加载菜品信息
   loadDishes("dish_info.txt");

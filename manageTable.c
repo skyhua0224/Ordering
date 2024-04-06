@@ -328,6 +328,7 @@ void cancelOrder(){
             remove("order_info.txt"); // 删除原文件
             rename("temp.txt", "order_info.txt"); // 将临时文件重命名为原文件
             printf("成功撤单\n");
+            sleep(5);
         }
         else
         {
