@@ -42,14 +42,23 @@ void reserveTable() {
     int currentPeopleNumber = 0;
     int currentOrderCount = 0;
     double currentTotalAmount = 0;
+    int isAddDish=0;
+    int paid=0;
+    char orderTime[64];
     FILE *orderInfoFile = fopen("order_info.txt", "r");
     if (orderInfoFile != NULL) {
-        while (fscanf(orderInfoFile, "%d %d %d %lf", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount) == 4) {
-            if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) {
+        while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &currentTableNumber,
+                  &currentPeopleNumber, &currentOrderCount, &currentTotalAmount,
+                  &paid, orderTime) == 6) {
+            if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0) 
+            {
+                if (!isAddDish && paid == 0)
+                { 
                 // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，那么跳过点菜过程，直接进入已下单过程
-                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount);
+                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount, 0);
                 fclose(orderInfoFile);
                 return;
+                }
             }
         }
         fclose(orderInfoFile);
@@ -83,7 +92,7 @@ void reserveTable() {
         peopleNumber = peopleNumber <= 4 ? peopleNumber + 8 : 12;
     }
 
-    placeOrder(tableNumber, peopleNumber,0);
+    placeOrder(tableNumber, peopleNumber,0,1);
 }
 
 void addOrder(){
@@ -96,7 +105,31 @@ void addOrder(){
     char ordertime[100];
     printf("请输入桌台号：");
     scanf("%d",&tablenum);
+
+    //检查桌台是否支付，是则返回到上一步
     FILE *orderInfoFile = fopen("order_info.txt", "r");
+    if(orderInfoFile != NULL)
+    {
+        //找到桌台
+        while(1)
+        {
+            fscanf(orderInfoFile,"%d %d %d %lf %d %s",
+            &latablenum,&peoplenum,&dishnum,&price,&status,ordertime);
+            if(latablenum==tablenum)
+            break;
+        }    
+
+        if(status == 1)
+        {
+            printf("\e[1;1H\e[2J");//清屏
+            printf("该桌台已经支付完成，请重新下单。");
+            sleep(5);
+            return;//返回上级菜单
+        }
+        fclose(orderInfoFile);
+    }
+
+    fopen("order_info.txt", "r");
     if (orderInfoFile != NULL) 
     {
         //找到桌台
@@ -177,12 +210,12 @@ void addOrder(){
                 char timeStr[64];
                 strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H:%M:%S", tm);
 
-                fprintf(orderInfoFile, "\n%d %d %d %.2lf %d %s", tablenum,
+                fprintf(orderInfoFile, "\n%d %d %d %lf %d %s", tablenum,
                         peoplenum, dishnum, price, 0,
                         timeStr); // 在新的一行中写入订单信息，其中0表示未支付
                 fclose(orderInfoFile);
 
-                checkout(tablenum, peoplenum, dishnum, price);
+                checkout(tablenum, peoplenum, dishnum, price, 0);
             }
             // 让用户选择一个菜品
         dishIndex = selectDishByCategory(categories[categoryChoice - 1]);
@@ -323,10 +356,19 @@ void cancelOrder(){
         fclose(orderInfoFile);
         fclose(tempFile);
         
-        if(found)
+        if(found)  // 删除原文件并将临时文件重命名为原文件
         {
-            remove("order_info.txt"); // 删除原文件
-            rename("temp.txt", "order_info.txt"); // 将临时文件重命名为原文件
+            remove("order_info.txt"); 
+            rename("temp.txt", "order_info.txt"); 
+            char filename[20];
+            sprintf(filename, "table_%d.txt", tablenum);
+            FILE *tableFile = fopen(filename, "r");
+            if (tableFile != NULL) 
+            {
+                // 如果文件存在，关闭文件并删除它
+                fclose(tableFile);
+                remove(filename);
+            }
             printf("成功撤单\n");
             sleep(5);
         }
@@ -516,9 +558,9 @@ void manageTable() {
     while(1) {
         printf(CLEAR_SCREEN_ANSI);
         printf("\n********** " YEL "桌台管理" RESET " **********\n");
-        printf(BLU "1. 预订桌台(TODO)\n" RESET);//TODO
-        printf(GRN "2. 加单(TODO)\n" RESET);//TODO
-        printf(CYN "3. 撤单(TODO)\n" RESET);//TODO
+        printf(BLU "1. 预订桌台\n" RESET);//TODO
+        printf(GRN "2. 加单\n" RESET);//TODO
+        printf(CYN "3. 撤单\n" RESET);//TODO
         printf(YEL "4. 查看桌台状态\n" RESET);
         printf(RED "5. 返回管理员菜单\n" RESET);
         printf(MAG "6. 退出系统\n" RESET);
