@@ -314,7 +314,7 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
          orderCount, totalAmount);
 
   if(ifpreorder==1)
-  return 0;
+  return ;
 
   while (1) {
     printf("\n" BYEL "********** 选项 **********\n" RESET);

@@ -29,7 +29,7 @@ void customerMenu() {
         while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount, &paid, orderTime) == 6) {
             if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0 && paid == 0) {
                 // 如果已经有当前桌号的订单信息，并且菜的数量和金额不为0，且未支付，那么跳过点菜过程，直接进入已下单过程
-                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount);
+                checkout(currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount,0);
                 fclose(orderInfoFile);
                 return;
             }
@@ -65,5 +65,5 @@ void customerMenu() {
         peopleNumber = peopleNumber <= 4 ? peopleNumber + 8 : 12;
     }
 
-    placeOrder(tableNumber, peopleNumber, 0);
+    placeOrder(tableNumber, peopleNumber, 0,0);
 }

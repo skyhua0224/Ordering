@@ -5,6 +5,7 @@
 #include "order.h"
 #include <time.h>
 #include <string.h>
+#include "sleep.h"
 #define MAX_TABLES 100
 
 typedef enum {
@@ -117,9 +118,10 @@ void addOrder(){
             printf("该桌台已经支付完成，请重新下单。");
             return;//返回上级菜单
         }
+        fclose(orderInfoFile);
     }
 
-    FILE *orderInfoFile = fopen("order_info.txt", "r");
+    fopen("order_info.txt", "r");
     if (orderInfoFile != NULL) 
     {
         //找到桌台
