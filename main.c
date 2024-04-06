@@ -4,12 +4,6 @@
 #include "color.h"
 #include "main_menu.h"
 
-#define CLEAR_SCREEN_ANSI "\e[1;1H\e[2J"
-
-void clearScreen() {
-    write(STDOUT_FILENO, CLEAR_SCREEN_ANSI, 12);
-}// 清屏函数
-
 void adminMenu();  // 声明adminMenu函数
 void customerMenu();  // 声明customerMenu函数
 
@@ -17,7 +11,7 @@ void mainMenu() {
     int choice;
 
     while(1) {
-        clearScreen();
+        printf(CLEAR_SCREEN_ANSI);
         printf("\n********** " RED "欢迎使用餐饮管理系统" RESET " **********\n");
         printf(GRN "1. 我是管理员\n" RESET);
         printf(BLU "2. 我是顾客\n" RESET);

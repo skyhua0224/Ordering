@@ -76,7 +76,7 @@ void printReceipt(int tableNumber, double totalAmount, Dish* dishes, char* payme
             }
 
             // 生成带有下单时间的小票文件名
-            char receiptFilename[64];
+            char receiptFilename[128];
             sprintf(receiptFilename, "receipt_%d_%s.txt", tableNumber, orderTime);
 
             FILE *receiptFile = fopen(receiptFilename, "w");
