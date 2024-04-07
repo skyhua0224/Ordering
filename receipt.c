@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "dish.h"  // 假设你的菜品定义在 dish.h 文件中
-#include "order.h"  // 假设你的订单定义在 order.h 文件中
-#include "color.h"  // 假设你的颜色定义在 color.h 文件中   
+#include "dish.h"  // 包含 dish.h 文件，用于处理菜品信息
+#include "order.h"  // 包含 order.h 文件，用于处理订单信息
+#include "color.h"  // 包含 color.h 文件，用于处理颜色信息
 
+// printReceiptDetails函数，该函数用于打印小票详情
 void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char lines[1024][1024], int lineCount, char* orderTime, char* paymentTime) {
+      // 打印小票头部信息
       fprintf(stream, "===================================================\n");
       fprintf(stream, "                    SkyHua Virtual                 \n");
       fprintf(stream, "===================================================\n");
@@ -16,6 +18,7 @@ void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char
       fprintf(stream, " 菜品                单价    数量    小计\n");
       fprintf(stream, "---------------------------------------------------\n");
 
+      // 打印每个菜品的信息
       for (int i = 0; i < lineCount; i++) {
             char *line = strdup(lines[i]);
             char *dishName = strtok(line, " ");
@@ -23,10 +26,11 @@ void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char
             double price = atof(strtok(NULL, " "));
             double subtotal = atof(strtok(NULL, " "));
             fprintf(stream, " %-20s%7.2f   %-8d%-8.2f\n",
-                                          dishName, price, quantity, subtotal);
+                                      dishName, price, quantity, subtotal);
             free(line);
       }
 
+      // 打印小票底部信息
       fprintf(stream, "---------------------------------------------------\n");
       fprintf(stream, "合计金额 ：              %.2f元\n", totalAmount);
       double paidAmount = totalAmount;  // 直接使用 totalAmount 作为实收金额
@@ -37,6 +41,7 @@ void printReceiptDetails(FILE* stream, int tableNumber, double totalAmount, char
       fprintf(stream, "===================================================\n");
 }
 
+// printReceipt函数，该函数用于打印小票
 void printReceipt(int tableNumber, double totalAmount, Dish* dishes, char* paymentTime) {
       char buffer[1024];
       char filename[20];
