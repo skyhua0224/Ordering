@@ -10,11 +10,15 @@
 #include <time.h>
 #include "adminOrder.h"
 
+// dishMenu函数的声明，该函数用于显示菜品管理菜单
 void dishMenu(); 
 
+// manageTable函数的声明，该函数用于显示桌台管理菜单
 void manageTable();
 
+// paymentSystem函数，该函数用于处理支付操作
 void paymentSystem() {
+    // 提示用户输入桌号
     printf(CYN "请输入桌号：\n" RESET);
     int tableNumber;
     scanf("%d", &tableNumber);
@@ -26,6 +30,7 @@ void paymentSystem() {
         return;
     }
 
+    // 搜索指定的桌号
     int found = 0;
     double totalAmount;
     int tempTableNumber, peopleNumber, numDishes;
@@ -40,17 +45,21 @@ void paymentSystem() {
 
     fclose(file);
 
+    // 如果没有找到指定的桌号，提示错误信息并返回
     if (!found) {
         printf(RED "无效的桌号，请重新输入\n" RESET);
         sleep(5);
         return;
     }
 
-    printf(CLEAR_SCREEN_ANSI);  // 清屏
+    // 清屏
+    printf(CLEAR_SCREEN_ANSI);  
 
+    // 显示桌号和总金额
     printf(GRN "桌号：%d\n" RESET, tableNumber);
     printf(GRN "总金额：%.2lf元\n" RESET, totalAmount);
 
+    // 提示用户选择支付方式
     printf(CYN "请选择该桌的支付方式：\n" RESET);
     printf("1. " RED "现金\n" RESET);
     printf("2. " BLU "银行卡\n" RESET);
@@ -61,6 +70,7 @@ void paymentSystem() {
 
     switch (choice) {
         case 1:
+            // 如果用户选择现金支付，显示应收和实收金额，并打印小票
             printf(CLEAR_SCREEN_ANSI);  // 清屏
             printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
             sleep(5);
@@ -75,6 +85,7 @@ void paymentSystem() {
             askPrintReceipt(tableNumber, totalAmount, NULL, paymentTime1);  // 假设这个函数可以处理NULL作为dishes参数
             break;
         case 2:
+            // 如果用户选择银行卡支付，显示应收和实收金额，并打印小票
             printf(CLEAR_SCREEN_ANSI);  // 清屏
             printf(GRN "应收：" YEL "%.2lf元\n" RESET, totalAmount);
             printf(RED "请使用" BLU "银行卡" RED "支付" YEL "%.2lf元\n" RESET, totalAmount);
@@ -90,18 +101,16 @@ void paymentSystem() {
             askPrintReceipt(tableNumber, totalAmount, NULL, paymentTime2);  // 假设这个函数可以处理NULL作为dishes参数
             break;
         case 3:
-            // 返回上级菜单
+            // 如果用户选择返回上级菜单，直接返回
             return;
         default:
+            // 如果用户选择的不是1、2或3，显示错误消息
             printf(RED "无效的选项，请重新选择\n" RESET);
             break;
     }
 }
 
-void orderSystem() {
-    // 在这里实现点菜系统功能
-}
-
+// adminMenu函数，该函数用于显示管理员菜单，并根据用户的选择调用相应的函数
 void adminMenu() {
     int choice;
 
@@ -122,15 +131,19 @@ void adminMenu() {
 
         switch(choice) {
             case 1:
-                dishMenu();  // 调用dishMenu函数
+                // 如果用户选择1，显示菜品管理菜单
+                dishMenu();  
                 break;
             case 2:
+                // 如果用户选择2，显示桌台管理菜单
                 manageTable();
                 break;
             case 3:
+                // 如果用户选择3，处理支付操作
                 paymentSystem();
                 break;
             case 4:
+                // 如果用户选择4，打印小票
                 printf(CYN "请输入桌号：\n" RESET);
                 int tableNumber;
                 scanf("%d", &tableNumber);
@@ -165,11 +178,14 @@ void adminMenu() {
                 printReceipt(tableNumber, totalAmount, NULL, orderTime);  // 假设这个函数可以处理NULL作为dishes参数
                 break;
             case 5:
+                // 如果用户选择5，处理点菜操作
                 adminOrderSystem();
                 break;
             case 6:
+                // 如果用户选择6，返回主菜单
                 return;
             default:
+                // 如果用户选择的不是1、2、3、4、5或6，显示错误消息
                 printf(RED "无效的选项，请重新选择\n" RESET);
         }
     }
