@@ -1,22 +1,27 @@
 #include <stdio.h>
 #include "payment.h"
 #include "color.h"
-#include "receipt.h"  // 包含 receipt.h 文件
-#include "sleep.h"  // 包含 sleep.h 文件
+#include "receipt.h"
+#include "sleep.h"
 #include "time.h"
 #include <stdlib.h>
 #include <string.h>
 
+// clearInputBuffer函数，该函数用于清空输入缓冲区
 void clearInputBuffer() {
     int c;
+    // 读取并丢弃输入缓冲区中的所有字符，直到遇到换行符或文件结束符
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
+// askPrintReceipt函数，该函数用于询问用户是否打印小票
 void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* paymentTime) {
     printf("是否打印小票？（1=是，0=否）：");
     int printReceiptChoice;
     scanf("%d", &printReceiptChoice);
-    clearInputBuffer();
+    clearInputBuffer();  // 清空输入缓冲区
+
+    // 如果用户选择打印小票
     if (printReceiptChoice == 1) {
         // 从 order_info.txt 文件中读取下单时间
         FILE *orderFile = fopen("order_info.txt", "r");
@@ -40,6 +45,7 @@ void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* pa
             }
             fclose(orderFile);
         }
+        // 打印小票
         printReceipt(tableNumber, totalAmount, dishes, paymentTime);
         sleep(10);
 
@@ -74,6 +80,7 @@ void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* pa
                 char orderTime[64];
                 strcpy(orderTime, token);
 
+                // 如果当前订单是用户的订单，并且未支付，将其标记为已支付
                 if (currentTableNumber == tableNumber && currentOrderCount > 0 && currentTotalAmount > 0 && paid == 0) {
                     fprintf(tempFile, "%d %d %d %.2lf %d %s", currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount, 1, orderTime);
                 } else {
@@ -82,8 +89,8 @@ void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* pa
             }
             fclose(orderInfoFile);
             fclose(tempFile);
-            remove("order_info.txt");
-            rename("temp.txt", "order_info.txt");
+            remove("order_info.txt");  // 删除原订单信息文件
+            rename("temp.txt", "order_info.txt");  // 将临时文件重命名为订单信息文件
         } else {
             printf("无法打开文件 order_info.txt 或 temp.txt\n");
         }
@@ -93,9 +100,10 @@ void askPrintReceipt(int tableNumber, double totalAmount, Dish* dishes, char* pa
         sprintf(tableFilename, "table_%d.txt", tableNumber);
         remove(tableFilename);
     }
-    exit(0);
+    exit(0);  // 结束程序
 }
 
+// processPayment函数，该函数用于处理支付
 void processPayment(int tableNumber, double totalAmount) {
     printf(CLEAR_SCREEN_ANSI);  // 清屏
 
@@ -112,8 +120,9 @@ void processPayment(int tableNumber, double totalAmount) {
 
     int choice;
     scanf("%d", &choice);
-    clearInputBuffer();
+    clearInputBuffer();  // 清空输入缓冲区
 
+    // 根据用户的选择，执行相应的操作
     switch (choice) {
         case 1:
             printf(CLEAR_SCREEN_ANSI);  // 清屏
@@ -142,7 +151,7 @@ void processPayment(int tableNumber, double totalAmount) {
             time_t t2 = time(NULL);
             struct tm *tm2 = localtime(&t2);
             char paymentTime2[64];
-            strftime(paymentTime2, sizeof(paymentTime2), "%Y-%m-%d %H:%M:%S", tm2);
+            strftime(paymentTime2, sizeof(paymentTime2), "%Y-%m-%d_%H:%M:%S", tm2);
 
             askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime2);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
