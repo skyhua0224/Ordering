@@ -8,12 +8,14 @@
 #include <time.h>
 #define MAX_TABLES 100
 
+// 定义桌台状态枚举
 typedef enum {
-    UNPAID,
-    PAID,
-    RESERVED
+    Unpaid,
+    Paid,
+    Reserved
 } TableStatus;
 
+// 定义桌台结构体
 typedef struct {
     int number;
     int people;
@@ -21,17 +23,17 @@ typedef struct {
     double price;
 } Table;
 
-Table tables[MAX_TABLES];
-int numTables = 0;
+Table tables[MAX_TABLES];  // 定义全局桌台数组
+int numTables = 0;  // 定义全局桌台数量
 
-
+// reserveTable函数，该函数用于预订桌台
 void reserveTable() {
-    // 在这里实现预订桌台功能
     printf("\e[1;1H\e[2J");
     printf("请输入您的桌号（范围1-100）：");
     int tableNumber;
     scanf("%d", &tableNumber);
 
+    // 检查用户输入的桌号是否有效
     if (tableNumber < 1 || tableNumber > 100) {
         printf(RED "无效的桌号，请重新输入\n" RESET);
         return;
@@ -95,50 +97,45 @@ void reserveTable() {
     placeOrder(tableNumber, peopleNumber,0,1);
 }
 
-void addOrder(){
-    int tablenum;
-    int latablenum;
-    int peoplenum;
-    int dishnum;
+// addOrder函数，该函数用于添加订单
+void addOrder() {
+    int tableNum;
+    int lastTableNum;
+    int peopleNum;
+    int dishNum;
     double price;
     int status;
-    char ordertime[100];
+    char orderTime[100];
     printf("请输入桌台号：");
-    scanf("%d",&tablenum);
+    scanf("%d", &tableNum);
 
-    //检查桌台是否支付，是则返回到上一步
+    // 检查桌台是否已支付，如果已支付，则返回上一步
     FILE *orderInfoFile = fopen("order_info.txt", "r");
-    if(orderInfoFile != NULL)
-    {
-        //找到桌台
-        while(1)
-        {
-            fscanf(orderInfoFile,"%d %d %d %lf %d %s",
-            &latablenum,&peoplenum,&dishnum,&price,&status,ordertime);
-            if(latablenum==tablenum)
-            break;
-        }    
+    if (orderInfoFile != NULL) {
+        // 找到桌台
+        while (1) {
+            fscanf(orderInfoFile, "%d %d %d %lf %d %s", &lastTableNum, &peopleNum, &dishNum, &price, &status, orderTime);
+            if (lastTableNum == tableNum) {
+                break;
+            }
+        }
 
-        if(status == 1)
-        {
-            printf("\e[1;1H\e[2J");//清屏
+        if (status == 1) {
+            printf("\e[1;1H\e[2J");  // 清屏
             printf("该桌台已经支付完成，请重新下单。");
             sleep(5);
-            return;//返回上级菜单
+            return;  // 返回上级菜单
         }
         fclose(orderInfoFile);
     }
 
-    fopen("order_info.txt", "r");
-    if (orderInfoFile != NULL) 
-    {
-        //找到桌台
-        while(1)
-        {
-            fscanf(orderInfoFile,"%d %d %d %lf %d %s",
-                &latablenum, &peoplenum, &dishnum, &price, &status, ordertime);
+    orderInfoFile = fopen("order_info.txt", "r");
+    if (orderInfoFile != NULL) {
+        // 找到桌台
+        while (1) {
+            fscanf(orderInfoFile, "%d %d %d %lf %d %s", &lastTableNum, &peopleNum, &dishNum, &price, &status, orderTime);
             break;
-        }    
+        }
     }
     fclose(orderInfoFile);
 
@@ -147,93 +144,92 @@ void addOrder(){
     while (1)
     {
         printf(CLEAR_SCREEN_ANSI);
-            printf(BWHT "********** 桌号%d，您已点了%d道菜，目前的金额为%.2lf元 "
-            "**********\n" RESET,tablenum, dishnum, price);
-            printf("\n" BYEL "********** 菜品类别 **********\n" RESET);
-            for (int i = 0; i < numCategories; i++) 
+        printf(BWHT "********** 桌号%d，您已点了%d道菜，目前的金额为%.2lf元 "
+        "**********\n" RESET, tableNum, dishNum, price);
+        printf("\n" BYEL "********** 菜品类别 **********\n" RESET);
+        for (int i = 0; i < numCategories; i++) 
+        {
+            printf(BGRN "%d. %s\n" RESET, i + 1, categories[i]);
+        }
+        printf(BBLU "请输入要点的菜品类别的编号（输入0下单，输入-"
+        "1删除已点菜品，输入-2退出点菜）：" RESET);
+        int categoryChoice;
+        scanf("%d", &categoryChoice);
+            
+        // 当用户输入-2时，退出点菜
+        if (categoryChoice == -2) 
+        {
+            char filename[20];
+            sprintf(filename, "table_%d.txt", tableNum);
+            FILE *tableFile = fopen(filename, "r");
+            if (tableFile != NULL) 
             {
-                printf(BGRN "%d. %s\n" RESET, i + 1, categories[i]);
+                // 如果文件存在，关闭文件并删除它
+                fclose(tableFile);
+                remove(filename);
             }
-            printf(BBLU "请输入要点的菜品类别的编号（输入0下单，输入-"
-            "1删除已点菜品，输入-2退出点菜）：" RESET);
-            int categoryChoice;
-            scanf("%d", &categoryChoice);
-                
-            // 当用户输入-2时，退出点菜
-            if (categoryChoice == -2) 
+            break;
+        }
+            
+        //当用户输入0时开始点菜
+        if (categoryChoice == 0) 
+        {
+            // 在下单时，先从order_info.txt文件中删除旧的订单信息
+            FILE *tempFile = fopen("temp.txt", "w");
+            orderInfoFile = fopen("order_info.txt", "r");
+            if (orderInfoFile != NULL && tempFile != NULL) 
             {
-                char filename[20];
-                sprintf(filename, "table_%d.txt", tablenum);
-                FILE *tableFile = fopen(filename, "r");
-                if (tableFile != NULL) 
+                while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &lastTableNum,
+                &peopleNum, &dishNum, &price,
+                &status, orderTime) == 6) 
                 {
-                    // 如果文件存在，关闭文件并删除它
-                    fclose(tableFile);
-                    remove(filename);
-                }
-                break;
-            }
-                
-            //当用户输入0时开始点菜
-            if (categoryChoice == 0) 
-            {
-                // 在下单时，先从order_info.txt文件中删除旧的订单信息
-                FILE *tempFile = fopen("temp.txt", "w");
-                orderInfoFile = fopen("order_info.txt", "r");
-                if (orderInfoFile != NULL && tempFile != NULL) 
-                {
-                    while (fscanf(orderInfoFile, "%d %d %d %lf %d %s", &latablenum,
-                    &peoplenum, &dishnum, &price,
-                    &status, ordertime) == 6) 
+                    if (lastTableNum != tableNum || status != 0) 
                     {
-                        if (latablenum != tablenum || status != 0) 
-                        {
-                            // 如果不是当前桌号的订单，或者已经支付，那么将这一行写入新的文件中
-                            fprintf(tempFile, "%d %d %d %.2lf %d %s\n", latablenum,
-                            peoplenum, dishnum, price, status,ordertime);
-                        }
+                        // 如果不是当前桌号的订单，或者已经支付，那么将这一行写入新的文件中
+                        fprintf(tempFile, "%d %d %d %.2lf %d %s\n", lastTableNum,
+                        peopleNum, dishNum, price, status, orderTime);
                     }
-                    fclose(orderInfoFile);
-                    fclose(tempFile);
-
-                    // 删除旧的文件，并将新的文件重命名为order_info.txt
-                    remove("order_info.txt");
-                    rename("temp.txt", "order_info.txt");
                 }
-                // 然后，将新的订单信息保存到order_info.txt文件中
-                orderInfoFile =fopen("order_info.txt","a"); 
-                // 使用"a"模式打开文件，以便在文件末尾添加新的订单信息
-
-                // 获取当前时间
-                time_t t = time(NULL);
-                struct tm *tm = localtime(&t);
-                char timeStr[64];
-                strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H:%M:%S", tm);
-
-                fprintf(orderInfoFile, "\n%d %d %d %lf %d %s", tablenum,
-                        peoplenum, dishnum, price, 0,
-                        timeStr); // 在新的一行中写入订单信息，其中0表示未支付
                 fclose(orderInfoFile);
+                fclose(tempFile);
 
-                checkout(tablenum, peoplenum, dishnum, price, 0);
+                // 删除旧的文件，并将新的文件重命名为order_info.txt
+                remove("order_info.txt");
+                rename("temp.txt", "order_info.txt");
             }
-            // 让用户选择一个菜品
+            // 然后，将新的订单信息保存到order_info.txt文件中
+            orderInfoFile = fopen("order_info.txt","a"); 
+            // 使用"a"模式打开文件，以便在文件末尾添加新的订单信息
+
+            // 获取当前时间
+            time_t t = time(NULL);
+            struct tm *tm = localtime(&t);
+            char timeStr[64];
+            strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H:%M:%S", tm);
+
+            fprintf(orderInfoFile, "\n%d %d %d %lf %d %s", tableNum,
+                    peopleNum, dishNum, price, 0,
+                    timeStr); // 在新的一行中写入订单信息，其中0表示未支付
+            fclose(orderInfoFile);
+
+            checkout(tableNum, peopleNum, dishNum, price, 0);
+        }
+        // 让用户选择一个菜品
         dishIndex = selectDishByCategory(categories[categoryChoice - 1]);
         if (dishIndex == -1) 
         {
             continue;
         }
-
         // 在这里，我们添加代码来处理用户的点单请求
         // 减少所选菜品的库存，增加所选菜品的订单数量
         dishes[dishIndex].stock--;
         dishes[dishIndex].orderCount++;
-        dishnum++;                           // 在这里将orderCount变量加1
+        dishNum++;                           // 在这里将orderCount变量加1
         price += dishes[dishIndex].price; // 在这里将totalAmount变量增加
 
         // 新建文件并写入菜品信息
         char filename[20];
-        sprintf(filename, "table_%d.txt", tablenum);
+        sprintf(filename, "table_%d.txt", tableNum);
         FILE *tableFile = fopen(filename, "a+");
         if (tableFile != NULL) 
         {
@@ -251,10 +247,10 @@ void addOrder(){
                 if (strcmp(dishName, dishes[dishIndex].name) == 0) 
                 {
                     int quantity = atoi(strtok(NULL, " "));
-                    double price = atof(strtok(NULL, " "));
+                    double dishPrice = atof(strtok(NULL, " "));
                     double total = atof(strtok(NULL, " "));
                     quantity++;
-                    total += price;
+                    total += dishPrice;
                     found = 1;
                     break;
                 }
@@ -288,11 +284,11 @@ void addOrder(){
                 if (strcmp(dishName, dishes[dishIndex].name) == 0) 
                 {
                     int quantity = atoi(strtok(NULL, " "));
-                    double price = atof(strtok(NULL, " "));
+                    double dishPrice = atof(strtok(NULL, " "));
                     double total = atof(strtok(NULL, " "));
                     quantity++;
-                    total += price;
-                    sprintf(lines[i], "%s %d %.2lf %.2lf", dishName, quantity, price,
+                    total += dishPrice;
+                    sprintf(lines[i], "%s %d %.2lf %.2lf", dishName, quantity, dishPrice,
                             total);
                     free(line);
                     break;
@@ -313,7 +309,7 @@ void addOrder(){
         }    
         else 
         {
-                        // 如果没有找到菜品，我们需要在文件末尾添加新的一行
+            // 如果没有找到菜品，我们需要在文件末尾添加新的一行
             tableFile = fopen(filename, "a");
             if (tableFile != NULL) 
             {
@@ -322,29 +318,27 @@ void addOrder(){
                 fclose(tableFile);
             }
         }
-    }        
+    }
 }
 
-void cancelOrder(){
-    int tablenum;
+// cancelOrder函数，该函数用于取消订单
+void cancelOrder() {
+    int tableNum;
     printf("请输入桌台号：");
-    scanf("%d",&tablenum);
-     FILE *orderInfoFile = fopen("order_info.txt", "r");
+    scanf("%d", &tableNum);
+    FILE *orderInfoFile = fopen("order_info.txt", "r");
     FILE *tempFile = fopen("temp.txt", "w");
     
-    if(orderInfoFile != NULL && tempFile != NULL)
-    {
+    if(orderInfoFile != NULL && tempFile != NULL) {
         char line[100]; // 假设每行最多100个字符
         int found = 0; // 标记是否找到桌台号对应的行
         
-        while(fgets(line, sizeof(line), orderInfoFile) != NULL)
-        {
-            int currentTablenum;
+        // 读取每一行，查找匹配的桌台号
+        while(fgets(line, sizeof(line), orderInfoFile) != NULL) {
+            int currentTableNum;
             // 使用 sscanf 从一行中读取桌台号
-            if(sscanf(line, "%d", &currentTablenum) == 1)
-            {
-                if(currentTablenum == tablenum)
-                {
+            if(sscanf(line, "%d", &currentTableNum) == 1) {
+                if(currentTableNum == tableNum) {
                     found = 1;
                     continue; // 跳过这一行，相当于删除这一行
                 }
@@ -356,34 +350,29 @@ void cancelOrder(){
         fclose(orderInfoFile);
         fclose(tempFile);
         
-        if(found)  // 删除原文件并将临时文件重命名为原文件
-        {
+        if(found) { // 删除原文件并将临时文件重命名为原文件
             remove("order_info.txt"); 
             rename("temp.txt", "order_info.txt"); 
             char filename[20];
-            sprintf(filename, "table_%d.txt", tablenum);
+            sprintf(filename, "table_%d.txt", tableNum);
             FILE *tableFile = fopen(filename, "r");
-            if (tableFile != NULL) 
-            {
+            if (tableFile != NULL) {
                 // 如果文件存在，关闭文件并删除它
                 fclose(tableFile);
                 remove(filename);
             }
             printf("成功撤单\n");
             sleep(5);
-        }
-        else
-        {
+        } else {
             remove("temp.txt"); // 删除临时文件
             printf("未找到对应桌台号的订单\n");
         }
-    }
-    else
-    {
+    } else {
         printf("无法打开文件\n");
     }
 }
 
+// viewTableStatusAndPrice函数，该函数用于查看桌台的状态和价格
 void viewTableStatusAndPrice() {
     printf(CLEAR_SCREEN_ANSI);  // 清屏
 
@@ -391,22 +380,27 @@ void viewTableStatusAndPrice() {
     printf(BLU "请输入要查看的桌号（按0返回）：" RESET);
     scanf("%d", &tableNumber);
 
+    // 如果输入的桌号为0，返回上一级菜单
     if (tableNumber == 0) {
         return;
     }
 
+    // 打开订单信息文件
     FILE *file = fopen("order_info.txt", "r");
     if (file == NULL) {
         printf("无法打开文件\n");
         return;
     }
 
+    // 定义一些变量来存储订单信息
     int currentTableNumber, currentPeopleNumber, currentOrderCount, paid;
     double currentTotalAmount;
     char orderTime[20];
 
     int orderCount = 0;
     int found = 0;
+
+    // 读取订单信息文件，查找匹配的桌号
     while (fscanf(file, "%d %d %d %lf %d %s", &currentTableNumber, &currentPeopleNumber, &currentOrderCount, &currentTotalAmount, &paid, orderTime) != EOF) {
         if (currentTableNumber == tableNumber) {
             printf("%d. %s桌号：%d, 下单时间：%s\n", ++orderCount, paid ? RED "[已支付]" RESET : BLU "[未支付]" RESET, currentTableNumber, orderTime);
@@ -416,6 +410,7 @@ void viewTableStatusAndPrice() {
 
     fclose(file);
 
+    // 如果没有找到匹配的桌号，提示用户重新输入
     if (!found) {
         printf(RED "未找到对应桌号，请重新输入\n" RESET);
         sleep(5);
@@ -423,14 +418,17 @@ void viewTableStatusAndPrice() {
         return;
     }
 
+    // 提示用户输入要查看的订单编号
     printf("请输入要查看的订单的编号（按0返回）：");
     int orderChoice;
     scanf("%d", &orderChoice);
 
+    // 如果输入的订单编号为0，返回上一级菜单
     if (orderChoice == 0) {
         return;
     }
 
+    // 重新打开订单信息文件，查找匹配的订单编号
     file = fopen("order_info.txt", "r");
     if (file == NULL) {
         printf("无法打开文件\n");
@@ -450,6 +448,7 @@ void viewTableStatusAndPrice() {
 
     fclose(file);
 
+    // 提示用户选择一个选项
     printf("请选择一个选项：\n");
     printf(BLU "1. 查看金额\n" RESET);
     printf(GRN "2. 查看订单数\n" RESET);
@@ -460,25 +459,31 @@ void viewTableStatusAndPrice() {
 
     int choice;
     scanf("%d", &choice);
-        switch(choice) {
-            case 1:
-                printf("总金额：%.2lf\n", currentTotalAmount);
-                sleep(5);
-                printf(CLEAR_SCREEN_ANSI);  // 清屏
-                break;
-            case 2:
-                printf("订单数：%d\n", currentOrderCount);
-                sleep(5);
-                printf(CLEAR_SCREEN_ANSI);  // 清屏
-                break;
-            case 3:
-                printf("用餐人数：%d\n", currentPeopleNumber);
-                sleep(5);
-                printf(CLEAR_SCREEN_ANSI);  // 清屏
-                break;
+
+    // 根据用户的选择，执行相应的操作
+    switch(choice) {
+        case 1:
+            // 用户选择查看总金额
+            printf("总金额：%.2lf\n", currentTotalAmount);
+            sleep(5);
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            break;
+        case 2:
+            // 用户选择查看订单数
+            printf("订单数：%d\n", currentOrderCount);
+            sleep(5);
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            break;
+        case 3:
+            // 用户选择查看用餐人数
+            printf("用餐人数：%d\n", currentPeopleNumber);
+            sleep(5);
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            break;
         case 4:
+            // 用户选择查看点单菜品
             if (paid) {
-                // 已支付，从小票文件中读取菜品信息
+                // 如果已支付，从小票文件中读取菜品信息
                 char receiptFileName[50];
                 sprintf(receiptFileName, "receipt_%d_%s.txt", currentTableNumber, orderTime);
                 FILE *receiptFile = fopen(receiptFileName, "r");
@@ -500,7 +505,7 @@ void viewTableStatusAndPrice() {
                 }
                 fclose(receiptFile);
             } else {
-                // 未支付，从桌号文件中读取菜品信息
+                // 如果未支付，从桌号文件中读取菜品信息
                 char tableFileName[20];
                 sprintf(tableFileName, "table_%d.txt", currentTableNumber);
                 FILE *tableFile = fopen(tableFileName, "r");
@@ -517,78 +522,83 @@ void viewTableStatusAndPrice() {
             sleep(5);
             printf(CLEAR_SCREEN_ANSI);  // 清屏
             break;
-            case 5: {
-                // 查看支付小票
-                if (!paid) {
-                    printf(RED "桌台未支付，无法打印支付小票！\n" RESET);
-                    sleep(5);
-                    printf(CLEAR_SCREEN_ANSI);  // 清屏
-                    break;
-                }
-                char receiptFileName[50];  // 在这里声明 receiptFileName 变量
-                sprintf(receiptFileName, "receipt_%d_%s.txt", currentTableNumber, orderTime);
-                FILE *receiptFile = fopen(receiptFileName, "r");
-                if (receiptFile == NULL) {
-                    printf("无法打开小票文件\n");
-                    return;
-                }
-                char line[100];
-                while (fgets(line, sizeof(line), receiptFile)) {
-                    printf("%s", line);
-                }
-                fclose(receiptFile);
+        case 5:
+            // 用户选择查看支付小票
+            if (!paid) {
+                printf(RED "桌台未支付，无法打印支付小票！\n" RESET);
                 sleep(5);
                 printf(CLEAR_SCREEN_ANSI);  // 清屏
                 break;
             }
-            case 6:
-                printf("桌号：%d, 人数：%d, 订单数：%d, 总金额：%.2lf, 状态：%s, 时间：%s\n", currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount, paid ? "已支付" : "未支付", orderTime);
-                sleep(5);
-                printf(CLEAR_SCREEN_ANSI);  // 清屏
-                break;
-            default:
-                printf("无效的选项，请重新选择\n");
-        }
-        viewTableStatusAndPrice();
+            char receiptFileName[50];  // 在这里声明 receiptFileName 变量
+            sprintf(receiptFileName, "receipt_%d_%s.txt", currentTableNumber, orderTime);
+            FILE *receiptFile = fopen(receiptFileName, "r");
+            if (receiptFile == NULL) {
+                printf("无法打开小票文件\n");
+                return;
+            }
+            char line[100];
+            while (fgets(line, sizeof(line), receiptFile)) {
+                printf("%s", line);
+            }
+            fclose(receiptFile);
+            sleep(5);
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            break;
+        case 6:
+            // 用户选择查看总览
+            printf("桌号：%d, 人数：%d, 订单数：%d, 总金额：%.2lf, 状态：%s, 时间：%s\n", currentTableNumber, currentPeopleNumber, currentOrderCount, currentTotalAmount, paid ? "已支付" : "未支付", orderTime);
+            sleep(5);
+            printf(CLEAR_SCREEN_ANSI);  // 清屏
+            break;
+        default:
+            // 用户输入了无效的选项
+            printf("无效的选项，请重新选择\n");
     }
+    // 在执行完用户选择的操作后，重新调用自身，以便用户可以继续查看其他信息或进行其他操作
+    viewTableStatusAndPrice();
+}
 
+// manageTable函数，该函数用于管理桌台
 void manageTable() {
     int choice;
 
+    // 使用一个无限循环，让用户可以反复选择操作
     while(1) {
-        printf(CLEAR_SCREEN_ANSI);
+        printf(CLEAR_SCREEN_ANSI);  // 清屏
         printf("\n********** " YEL "桌台管理" RESET " **********\n");
-        printf(BLU "1. 预订桌台\n" RESET);//TODO
-        printf(GRN "2. 加单\n" RESET);//TODO
-        printf(CYN "3. 撤单\n" RESET);//TODO
-        printf(YEL "4. 查看桌台状态\n" RESET);
-        printf(RED "5. 返回管理员菜单\n" RESET);
-        printf(MAG "6. 退出系统\n" RESET);
+        printf(BLU "1. 预订桌台\n" RESET);  // 提示用户可以选择预订桌台
+        printf(GRN "2. 加单\n" RESET);  // 提示用户可以选择加单
+        printf(CYN "3. 撤单\n" RESET);  // 提示用户可以选择撤单
+        printf(YEL "4. 查看桌台状态\n" RESET);  // 提示用户可以选择查看桌台状态
+        printf(RED "5. 返回管理员菜单\n" RESET);  // 提示用户可以选择返回管理员菜单
+        printf(MAG "6. 退出系统\n" RESET);  // 提示用户可以选择退出系统
 
         printf("请选择一个选项：");
 
-        scanf("%d", &choice);
+        scanf("%d", &choice);  // 读取用户的选择
 
+        // 根据用户的选择，执行相应的操作
         switch(choice) {
             case 1:
-                reserveTable();
+                reserveTable();  // 用户选择预订桌台
                 break;
             case 2:
-                addOrder();
+                addOrder();  // 用户选择加单
                 break;
             case 3:
-                cancelOrder();
+                cancelOrder();  // 用户选择撤单
                 break;
             case 4:
-                viewTableStatusAndPrice();
+                viewTableStatusAndPrice();  // 用户选择查看桌台状态
                 break;
             case 5:
-                return;
+                return;  // 用户选择返回管理员菜单，结束当前函数
             case 6:
                 printf(MAG "退出系统\n" RESET);
-                exit(0);
+                exit(0);  // 用户选择退出系统，结束程序
             default:
-                printf(RED "无效的选项，请重新选择\n" RESET);
+                printf(RED "无效的选项，请重新选择\n" RESET);  // 用户输入了无效的选项，提示用户重新选择
         }
     }
 }
