@@ -5,6 +5,7 @@
 #include "color.h"
 #include "order_info.h" 
 
+// customerMenu函数，该函数用于处理顾客的点菜操作
 void customerMenu() {
     printf("\033[H\033[J"); // 清屏
     printf("\033[1;36m********** 欢迎光临SkyHua Virtual 餐厅 **********\033[0m\n");
@@ -12,6 +13,7 @@ void customerMenu() {
     int tableNumber;
     scanf("%d", &tableNumber);
 
+    // 检查桌号是否在有效范围内
     if (tableNumber < 1 || tableNumber > 100) {
         printf(RED "无效的桌号，请重新输入\n" RESET);
         return;
@@ -65,5 +67,6 @@ void customerMenu() {
         peopleNumber = peopleNumber <= 4 ? peopleNumber + 8 : 12;
     }
 
+    // 调用placeOrder函数进行点菜操作
     placeOrder(tableNumber, peopleNumber, 0, 0);
 }
