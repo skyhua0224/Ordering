@@ -11,7 +11,7 @@
 #include <time.h>
 #include "sleep.h"
 
-void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifpreorder) {
+void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifPreOrder) {
   // 加载菜品信息
   loadDishes("dish_info.txt");
 
@@ -117,13 +117,13 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifpreorder
               timeStr); // 在新的一行中写入订单信息，其中0表示未支付
       fclose(orderInfoFile);
 
-      if(ifpreorder==1)
+      if(ifPreOrder==1)
       {
         printf("预定成功！\n");
         exit(0);
       }
 
-      checkout(tableNumber, peopleNumber, orderCount, totalAmount, ifpreorder);
+      checkout(tableNumber, peopleNumber, orderCount, totalAmount, ifPreOrder);
     }
 
     if (categoryChoice == -1) {
@@ -307,16 +307,19 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifpreorder
   }
 }
 
+// checkout函数，该函数用于处理结账
 void checkout(int tableNumber, int peopleNumber, int orderCount,
-              double totalAmount,int ifpreorder) {
+        double totalAmount,int ifPreOrder) {
   printf(CLEAR_SCREEN_ANSI);
   printf(BWHT "********** 已下单！您已点了%d道菜，目前的金额为%.2lf元 "
-              "**********\n" RESET,
-         orderCount, totalAmount);
+        "**********\n" RESET,
+       orderCount, totalAmount);
 
-  if(ifpreorder==1)
-  return;
+  // 如果是预订单，直接返回
+  if(ifPreOrder==1)
+    return;
 
+  // 使用一个无限循环，让用户可以反复选择操作
   while (1) {
     printf("\n" BYEL "********** 选项 **********\n" RESET);
     printf(BGRN "1. 加菜\n" RESET);
@@ -324,8 +327,12 @@ void checkout(int tableNumber, int peopleNumber, int orderCount,
     printf(BBLU "请输入选项的编号（输入0退出）：" RESET);
 
     int choice;
-    scanf("%d", &choice);
+    if(scanf("%d", &choice) != 1) {  // 检查scanf的返回值，解决clang-tidy的警告
+      printf(RED "无效的输入，请重新选择\n" RESET);
+      continue;
+    }
 
+    // 根据用户的选择，执行相应的操作
     switch (choice) {
     case 0:
       mainMenu();
