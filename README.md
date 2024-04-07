@@ -77,12 +77,13 @@ Linux/macOS:
     settings.json
     tasks.json
 admin_menu.c
+adminOrder.c
+adminOrder.h
 color.h
 customer_menu.c
 dish_info.txt
 dish.c
 dish.h
-main
 main_menu.h
 main.c
 manageTable.c
@@ -98,7 +99,6 @@ output/
             ...
 payment.c
 payment.h
-process_test.c
 program
 program.exe
 README.md
@@ -132,6 +132,7 @@ table.h
 
 - [@skyhua0224](https://github.com/skyhua0224)
 - [@xshsama](https://github.com/xshsama)
+- [@maxkinm](https://github.com/maxkinm)
 
 ## 👨‍💻 作者
 
