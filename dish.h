@@ -25,5 +25,6 @@ void saveDishes(const char* filename);
 int selectDishByCategory(const char* category);  // 新增函数声明
 int isHotDish(Dish dish);
 void handleDishSelectionByCategory(const char* category);  // 新增函数声明
+void displayHotDishes();  // 新增函数声明
 
 #endif

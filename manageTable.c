@@ -572,8 +572,6 @@ void manageTable() {
         switch(choice) {
             case 1:
                 reserveTable();
-                // updateTablePeople();
-                // updateTableStatus();
                 break;
             case 2:
                 addOrder();
