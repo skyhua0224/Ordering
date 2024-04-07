@@ -46,11 +46,10 @@
 
 ## 👨‍💻 编译
 
-使用以下命令来编译项目：
+你需要 GCC 编译器来编译这个项目。使用以下命令来编译项目：
 
 ```sh
-gcc main.c admin_menu.c customer_menu.c dish.c manageTable.c order.c order_info.c payment.c receipt.c table.c -o program
-```
+gcc main.c admin_menu.c customer_menu.c dish.c manageTable.c order.c order_info.c payment.c receipt.c table.c adminOrder.c -o program
 
 ## 🚀 运行
 
@@ -72,56 +71,56 @@ Linux/macOS:
 
 ```
 .vscode/
-    c_cpp_properties.json
-    launch.json
-    settings.json
-    tasks.json
-admin_menu.c
-adminOrder.c
-adminOrder.h
-color.h
-customer_menu.c
-dish_info.txt
-dish.c
-dish.h
-main_menu.h
-main.c
-manageTable.c
-order_info.c
-order_info.h
-order_info.txt
-order.c
-order.h
+    c_cpp_properties.json  // VS Code 的 C/C++ 配置文件
+    launch.json  // VS Code 的调试配置文件
+    settings.json  // VS Code 的设置文件
+    tasks.json  // VS Code 的任务配置文件
+admin_menu.c  // 管理员菜单的实现
+adminOrder.c  // 管理员订单的实现
+adminOrder.h  // 管理员订单的声明
+color.h  // 颜色的定义
+customer_menu.c  // 客户菜单的实现
+dish_info.txt  // 菜品信息的数据文件
+dish.c  // 菜品管理的实现
+dish.h  // 菜品管理的声明
+main_menu.h  // 主菜单的声明
+main.c  // 主函数的实现
+manageTable.c  // 餐桌管理的实现
+order_info.c  // 订单信息的实现
+order_info.h  // 订单信息的声明
+order_info.txt  // 订单信息的数据文件
+order.c  // 订单管理的实现
+order.h  // 订单管理的声明
 output/
-    main
-    main.dSYM/
+    main  // 编译生成的可执行文件（Linux/macOS）
+    main.dSYM/  // 调试信息文件（macOS）
         Contents/
             ...
-payment.c
-payment.h
-program
-program.exe
-README.md
-receipt_16_2024-03-22_16:01:15.txt
-receipt_94.txt
-receipt.c
-receipt.h
-sleep.h
-table_11.txt
-table_15.txt
-table_17.txt
-table_95.txt
-table.c
-table.h
+payment.c  // 支付系统的实现
+payment.h  // 支付系统的声明
+program  // 编译生成的可执行文件（Linux/macOS）
+program.exe  // 编译生成的可执行文件（Windows）
+README.md  // 项目的 README 文件
+receipt_16_2024-03-22_16:01:15.txt  // 生成的收据文件
+receipt_94.txt  // 生成的收据文件
+receipt.c  // 收据生成的实现
+receipt.h  // 收据生成的声明
+sleep.h  // sleep 函数的声明
+table_11.txt  // 餐桌信息的数据文件
+table_15.txt  // 餐桌信息的数据文件
+table_17.txt  // 餐桌信息的数据文件
+table_95.txt  // 餐桌信息的数据文件
+table.c  // 餐桌的实现
+table.h  // 餐桌的声明
 ```
 
 ## ⚠️ 注意事项
 
-请确保在运行程序前已经正确地编译了所有的源文件。此外，你需要安装GCC编译器。你可以通过以下链接来查看如何安装GCC。此处链接提供的是经过本人使用的英文教程，应该很容易上手，配合DeepL翻译使用更佳。也可以咨询本人：
+请确保在运行程序前已经正确地编译了所有的源文件。此外，你需要安装GCC编译器。你可以通过以下链接来查看如何安装GCC。此处链接提供的是经过本人使用的英文教程，应该很容易上手，如果你的英文不是特别好，可以配合DeepL翻译使用更佳。也可以咨询本人：
 
 - [Windows](https://sajidifti.medium.com/how-to-install-gcc-and-gdb-on-windows-using-msys2-tutorial-0fceb7e66454)
 - [Linux](https://gcc.gnu.org/install/index.html)
-- [MacOS](https://mac.install.guide/commandlinetools/4http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/)
+- [MacOS](https://mac.install.guide/commandlinetools/4)
 
 ## 🤝 贡献
 
