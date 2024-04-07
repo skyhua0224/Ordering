@@ -4,9 +4,13 @@
 #include "color.h"
 #include "main_menu.h"
 
-void adminMenu();  // 声明adminMenu函数
-void customerMenu();  // 声明customerMenu函数
+// adminMenu函数的声明，该函数用于显示管理员菜单
+void adminMenu();
 
+// customerMenu函数的声明，该函数用于显示顾客菜单
+void customerMenu();
+
+// mainMenu函数，该函数用于显示主菜单，并根据用户的选择调用相应的函数
 void mainMenu() {
     int choice;
 
@@ -22,20 +26,25 @@ void mainMenu() {
 
         switch(choice) {
             case 1:
+                // 如果用户选择1，显示管理员菜单
                 adminMenu();
                 break;
             case 2:
+                // 如果用户选择2，显示顾客菜单
                 customerMenu();
                 break;
             case 3:
+                // 如果用户选择3，退出程序
                 printf(YEL "退出程序\n" RESET);
                 exit(0);
             default:
+                // 如果用户选择的不是1、2或3，显示错误消息
                 printf(RED "无效的选项，请重新选择\n" RESET);
         }
     }
 }
 
+// main函数，程序的入口点。这个函数调用mainMenu函数来显示主菜单
 int main() {
     mainMenu();
     return 0;
