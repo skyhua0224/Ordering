@@ -103,12 +103,16 @@ order_info.txt
     launch.json  // VS Code 的调试配置文件
     settings.json  // VS Code 的设置文件
     tasks.json  // VS Code 的任务配置文件
+example_data/
+    dish_info.txt  // 菜品信息的样例数据文件
+    order_info.txt  // 订单信息的样例数据文件
+.gitignore // Git上传忽略的文件与文件夹
 admin_menu.c  // 管理员菜单的实现
 adminOrder.c  // 管理员订单的实现
 adminOrder.h  // 管理员订单的声明
+CMakeLists.txt // 项目的CMake文件
 color.h  // 颜色的定义
 customer_menu.c  // 客户菜单的实现
-dish_info.txt  // 菜品信息的数据文件
 dish.c  // 菜品管理的实现
 dish.h  // 菜品管理的声明
 main_menu.h  // 主菜单的声明
@@ -116,28 +120,15 @@ main.c  // 主函数的实现
 manageTable.c  // 餐桌管理的实现
 order_info.c  // 订单信息的实现
 order_info.h  // 订单信息的声明
-order_info.txt  // 订单信息的数据文件
 order.c  // 订单管理的实现
 order.h  // 订单管理的声明
-output/
-    main  // 编译生成的可执行文件（Linux/macOS）
-    main.dSYM/  // 调试信息文件（macOS）
-        Contents/
-            ...
 payment.c  // 支付系统的实现
 payment.h  // 支付系统的声明
-program  // 编译生成的可执行文件（Linux/macOS）
-program.exe  // 编译生成的可执行文件（Windows）
 README.md  // 项目的 README 文件
-receipt_16_2024-03-22_16:01:15.txt  // 生成的收据文件
-receipt_94.txt  // 生成的收据文件
 receipt.c  // 收据生成的实现
 receipt.h  // 收据生成的声明
+sleep.c // sleep 函数的实现
 sleep.h  // sleep 函数的声明
-table_11.txt  // 餐桌信息的数据文件
-table_15.txt  // 餐桌信息的数据文件
-table_17.txt  // 餐桌信息的数据文件
-table_95.txt  // 餐桌信息的数据文件
 table.c  // 餐桌的实现
 table.h  // 餐桌的声明
 ```
@@ -150,7 +141,7 @@ table.h  // 餐桌的声明
     ```
     wsl --install
     ```
-然后再参考Linux安装方式安装cmake。
+    然后再参考Linux安装方式安装cmake。
 
 - **Linux**：在大多数Linux发行版中，你可以使用包管理器来安装CMake和make。例如，在团队使用的Debian系Linux中，你可以使用以下命令：
 
