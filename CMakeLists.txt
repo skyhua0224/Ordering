@@ -9,3 +9,6 @@ add_executable(Ordering main.c admin_menu.c customer_menu.c dish.c manageTable.c
 
 # 设置C标准
 set(CMAKE_C_STANDARD 99)
+
+# 包含CPack
+include(CPack)

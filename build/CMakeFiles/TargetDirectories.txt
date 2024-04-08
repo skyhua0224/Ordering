@@ -1,3 +1,0 @@
-/Users/skyhua/Library/Mobile Documents/com~apple~CloudDocs/Coding/Project/Ordering/build/CMakeFiles/Ordering.dir
-/Users/skyhua/Library/Mobile Documents/com~apple~CloudDocs/Coding/Project/Ordering/build/CMakeFiles/edit_cache.dir
-/Users/skyhua/Library/Mobile Documents/com~apple~CloudDocs/Coding/Project/Ordering/build/CMakeFiles/rebuild_cache.dir
