@@ -10,6 +10,10 @@ add_executable(Ordering main.c admin_menu.c customer_menu.c dish.c manageTable.c
 # 设置C标准
 set(CMAKE_C_STANDARD 99)
 
+# 将文件从example_data目录复制到构建目录
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/example_data/order_info.txt ${CMAKE_CURRENT_BINARY_DIR}/order_info.txt COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/example_data/dish_info.txt ${CMAKE_CURRENT_BINARY_DIR}/dish_info.txt COPYONLY)
+
 # 设置CPack变量
 set(CPACK_PACKAGE_NAME "Ordering")
 set(CPACK_PACKAGE_VENDOR "SkyHua Studio")
