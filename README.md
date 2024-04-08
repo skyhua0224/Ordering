@@ -46,10 +46,26 @@
 
 ## 👨‍💻 编译
 
-你需要 GCC 编译器来编译这个项目。使用以下命令来编译项目：
+你需要CMake和GCC来编译这个项目。首先，创建一个新的目录用于构建：
 
 ```sh
-gcc main.c admin_menu.c customer_menu.c dish.c manageTable.c order.c order_info.c payment.c receipt.c table.c adminOrder.c -o program
+mkdir build
+cd build
+```
+
+然后，运行CMake来生成Makefile文件：
+
+```sh
+cmake ..
+```
+
+最后，运行make来编译项目：
+
+```sh
+make
+```
+
+这将会在`build`目录下生成一个名为`Ordering`的可执行文件。
 
 ## 🚀 运行
 
@@ -58,13 +74,13 @@ gcc main.c admin_menu.c customer_menu.c dish.c manageTable.c order.c order_info.
 Windows:
 
 ```sh
-./program.exe
+./Ordering.exe
 ```
 
 Linux/macOS:
 
 ```sh
-./program
+./Ordering
 ```
 
 ## 🗂️ 文件结构
@@ -114,13 +130,27 @@ table.c  // 餐桌的实现
 table.h  // 餐桌的声明
 ```
 
-## ⚠️ 注意事项
+## ⚙️ 安装CMake
 
-请确保在运行程序前已经正确地编译了所有的源文件。此外，你需要安装GCC编译器。你可以通过以下链接来查看如何安装GCC。此处链接提供的是经过本人使用的英文教程，应该很容易上手，如果你的英文不是特别好，可以配合DeepL翻译使用更佳。也可以咨询本人：
+你需要CMake来编译这个项目。以下是在不同操作系统上安装CMake的方法：
 
-- [Windows](https://sajidifti.medium.com/how-to-install-gcc-and-gdb-on-windows-using-msys2-tutorial-0fceb7e66454)
-- [Linux](https://gcc.gnu.org/install/index.html)
-- [MacOS](https://mac.install.guide/commandlinetools/4)
+- **Windows**：你可以从[CMake官方网站](https://cmake.org/download/)下载CMake的Windows安装程序。下载并运行安装程序，然后按照提示进行操作。我们更推荐使用Windows自带WSL使用Linux环境运行我们的程序，因为团队所使用的是macOS和Ubuntu(WSL)进行开发。你可以使用以下命令在有支持硬件虚拟化的电脑并搭载Windows 10和Windows 11上通过PowerShell安装默认的WSL2 Ubuntu 22.04 LTS:
+    ```
+    wsl --install
+    ```
+然后再参考Linux安装方式安装cmake。
+
+- **Linux**：在大多数Linux发行版中，你可以使用包管理器来安装CMake和make。例如，在团队使用的Debian系Linux中，你可以使用以下命令：
+
+    ```
+    sudo apt install build-essential cmake
+    ```
+
+- **macOS**：在macOS中，你可以使用Homebrew来安装CMake。如果你还没有安装Homebrew，你可以从Homebrew官方网站下载并安装。然后，你可以使用以下命令来安装CMake：
+
+    ```
+    brew install cmake
+    ```
 
 ## 🤝 贡献
 
