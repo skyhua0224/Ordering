@@ -220,6 +220,13 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifPreOrder
       continue;
     }
 
+    // 检查所选菜品的库存
+    if (dishes[dishIndex].stock <= 0) {
+      printf(RED "对不起，%s已经售罄，请选择其他菜品。\n" RESET, dishes[dishIndex].name);
+      sleep(5);
+      continue;
+    }
+
     // 在这里，我们添加代码来处理用户的点单请求
     // 减少所选菜品的库存，增加所选菜品的订单数量
     dishes[dishIndex].stock--;
