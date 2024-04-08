@@ -10,5 +10,12 @@ add_executable(Ordering main.c admin_menu.c customer_menu.c dish.c manageTable.c
 # 设置C标准
 set(CMAKE_C_STANDARD 99)
 
+# 设置CPack变量
+set(CPACK_PACKAGE_NAME "Ordering")
+set(CPACK_PACKAGE_VENDOR "SkyHua Studio")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Ordering - A simple catering management system with features such as dish management, order management, payment, and receipt generation.")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Ordering")
+
 # 包含CPack
 include(CPack)
