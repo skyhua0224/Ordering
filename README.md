@@ -74,13 +74,25 @@ make
 Windows:
 
 ```sh
+cd build
 ./Ordering.exe
 ```
 
 Linux/macOS:
 
 ```sh
+cd build
 ./Ordering
+```
+
+编译默认会复制example_data的菜单数据和订单数据复制到默认文件夹，如果你要自己使用，请确保在执行文件Ordering的同目录下存在dish_info.txt和order_info.txt。以下分别为两个文件的格式：
+dish_info.txt
+```
+库存 价格（两位小数） 菜名 类别
+```
+order_info.txt
+```
+桌号 人数 点菜数量 总金额 是否支付 下单时间（yyyy-MM-dd_HH_mm_ss）
 ```
 
 ## 🗂️ 文件结构
