@@ -34,7 +34,7 @@ jobs:
       run: sudo cmake --install build --prefix install
 
     - name: Package
-      run: cpack --config CPackSourceConfig.cmake
+      run: cpack --config build/CPackSourceConfig.cmake
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
@@ -47,6 +47,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Configure CMake
+      run: cmake -B build
 
     - name: Package source
       run: cpack --config build/CPackSourceConfig.cmake
