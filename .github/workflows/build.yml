@@ -37,21 +37,37 @@ jobs:
           brew install cmake
         elif [[ "${{ runner.os }}" == "Windows" ]]; then
           choco install mingw --force
-          choco install 7zip.install
           echo "CMAKE_C_COMPILER=/mingw64/bin/gcc.exe" >> $GITHUB_ENV
           echo "CMAKE_CXX_COMPILER=/mingw64/bin/g++.exe" >> $GITHUB_ENV
         fi
 
     - name: Configure CMake
+      shell: bash
       run: |
         mkdir build
         cd build
-        cmake ..
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "/mingw64/bin" >> $GITHUB_PATH
+          cmake .. -G "MinGW Makefiles"
+        else
+          cmake ..
+        fi
 
     - name: Build
+      shell: bash
       run: |
         cd build
-        make
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          mingw32-make
+        else
+          make
+        fi
+
+    - name: Install dependencies
+      run: |
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          choco install 7zip.install
+        fi
 
     - name: Package binary
       shell: bash
@@ -81,10 +97,15 @@ jobs:
       run: sudo apt-get install -y cmake g++
 
     - name: Configure CMake
+      shell: bash
       run: |
         mkdir build
         cd build
-        cmake ..
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          cmake .. -G "MinGW Makefiles" -DCMAKE_C_COMPILER=/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=/mingw64/bin/g++.exe
+        else
+          cmake ..
+        fi
 
     - name: Package source
       run: |
@@ -145,9 +166,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/ubuntu-latest-amd64-binary/Ordering
-        asset_name: ubuntu-latest-amd64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/ubuntu-latest-amd64-binary/ubuntu-latest-amd64-binary.zip
+        asset_name: ubuntu-latest-amd64-binary.zip
+        asset_content_type: application/zip
 
     - name: Upload ubuntu-latest-arm64-binary
       uses: actions/upload-release-asset@v1
@@ -155,9 +176,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/ubuntu-latest-arm64-binary/Ordering
-        asset_name: ubuntu-latest-arm64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/ubuntu-latest-arm64-binary/ubuntu-latest-arm64-binary.zip
+        asset_name: ubuntu-latest-arm64-binary.zip
+        asset_content_type: application/zip
 
     - name: Upload macos-latest-amd64-binary
       uses: actions/upload-release-asset@v1
@@ -165,9 +186,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/macos-latest-amd64-binary/Ordering
-        asset_name: macos-latest-amd64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/macos-latest-amd64-binary/macos-latest-amd64-binary.zip
+        asset_name: macos-latest-amd64-binary.zip
+        asset_content_type: application/zip
 
     - name: Upload macos-latest-arm64-binary
       uses: actions/upload-release-asset@v1
@@ -175,9 +196,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/macos-latest-arm64-binary/Ordering
-        asset_name: macos-latest-arm64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/macos-latest-arm64-binary/macos-latest-arm64-binary.zip
+        asset_name: macos-latest-arm64-binary.zip
+        asset_content_type: application/zip
 
     - name: Upload windows-latest-amd64-binary
       uses: actions/upload-release-asset@v1
@@ -195,9 +216,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/windows-latest-arm64-binary/Ordering.exe
-        asset_name: windows-latest-arm64-binary.exe
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/windows-latest-arm64-binary/windows-latest-arm64-binary.zip
+        asset_name: windows-latest-arm64-binary.zip
+        asset_content_type: application/zip
 
     - name: Find source package
       id: find_source_package
