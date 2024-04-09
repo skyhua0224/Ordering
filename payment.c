@@ -134,7 +134,7 @@ void processPayment(int tableNumber, double totalAmount) {
             time_t t1 = time(NULL);
             struct tm *tm1 = localtime(&t1);
             char paymentTime1[64];
-            strftime(paymentTime1, sizeof(paymentTime1), "%Y-%m-%d_%H:%M:%S", tm1);
+            strftime(paymentTime1, sizeof(paymentTime1), "%Y-%m-%d_%H_%M_%S", tm1);
 
             askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime1);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
@@ -151,7 +151,7 @@ void processPayment(int tableNumber, double totalAmount) {
             time_t t2 = time(NULL);
             struct tm *tm2 = localtime(&t2);
             char paymentTime2[64];
-            strftime(paymentTime2, sizeof(paymentTime2), "%Y-%m-%d_%H:%M:%S", tm2);
+            strftime(paymentTime2, sizeof(paymentTime2), "%Y-%m-%d_%H_%M_%S", tm2);
 
             askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime2);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
@@ -168,7 +168,7 @@ void processPayment(int tableNumber, double totalAmount) {
             time_t t3 = time(NULL);
             struct tm *tm3 = localtime(&t3);
             char paymentTime3[64];
-            strftime(paymentTime3, sizeof(paymentTime3), "%Y-%m-%d_%H:%M:%S", tm3);
+            strftime(paymentTime3, sizeof(paymentTime3), "%Y-%m-%d_%H_%M_%S", tm3);
 
             askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime3);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
@@ -185,7 +185,7 @@ void processPayment(int tableNumber, double totalAmount) {
             time_t t4 = time(NULL);
             struct tm *tm4 = localtime(&t4);
             char paymentTime4[64];
-            strftime(paymentTime4, sizeof(paymentTime4), "%Y-%m-%d_%H:%M:%S", tm4);
+            strftime(paymentTime4, sizeof(paymentTime4), "%Y-%m-%d_%H_%M_%S", tm4);
 
             askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime4);
             printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
@@ -201,7 +201,17 @@ void processPayment(int tableNumber, double totalAmount) {
             sleep(1);
             printf(RED "你被赶出了餐厅！\n" RESET);
             sleep(1);
-            return;
+            // 获取支付时间
+            time_t t5 = time(NULL);
+            struct tm *tm5 = localtime(&t5);
+            char paymentTime5[64];
+            strftime(paymentTime5, sizeof(paymentTime5), "%Y-%m-%d_%H_%M_%S", tm5);
+
+            askPrintReceipt(tableNumber, totalAmount, dishes, paymentTime5);
+            printf(RED "感谢您光临" GRN "SkyHua" YEL " Virtual" BLU " 餐厅" MAG "，期待您下次光临！\n" RESET);
+            sleep(5);
+            break;
+            
         case 6:
             // 返回上级菜单
             return;
