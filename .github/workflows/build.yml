@@ -11,7 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [x86, x64]
 
     steps:
     - uses: actions/checkout@v3
@@ -22,10 +23,12 @@ jobs:
           sudo apt install -y cmake
         elif [[ "${{ runner.os }}" == "macOS" ]]; then
           brew install cmake
+        elif [[ "${{ runner.os }}" == "Windows" ]]; then
+          choco install cmake
         fi
 
     - name: Configure CMake
-      run: cmake -B build
+      run: cmake -B build -A ${{ matrix.arch }}
 
     - name: Build
       run: cmake --build build --config Release
@@ -39,7 +42,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.os }}-package
+        name: ${{ matrix.os }}-${{ matrix.arch }}-package
         path: ./*.tar.gz
 
   build-source:
