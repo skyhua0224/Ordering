@@ -74,7 +74,7 @@ jobs:
       run: |
         cd build
         sudo cpack --config CPackSourceConfig.cmake
-        sudo mv Ordering-*-Source.tar.gz ..
+        sudo mv package/Ordering-*-Source.tar.gz ..
 
     - name: Upload source artifact
       uses: actions/upload-artifact@v3
