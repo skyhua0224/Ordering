@@ -20,6 +20,7 @@ set(CPACK_PACKAGE_VENDOR "SkyHua Studio")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Ordering - A simple catering management system with features such as dish management, order management, payment, and receipt generation.")
 set(CPACK_PACKAGE_VERSION "1.0.0")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Ordering")
+set(CPACK_SOURCE_IGNORE_FILES "/build/;${CPACK_SOURCE_IGNORE_FILES}")
 
 # 包含CPack
 include(CPack)
