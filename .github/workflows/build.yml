@@ -45,13 +45,16 @@ jobs:
 
     - name: Package binary
       run: |
-        mv build/Ordering .
+        mkdir package
+        mv build/Ordering package/
+        cp example_data/order_info.txt package/
+        cp example_data/dish_info.txt package/
 
     - name: Upload binary artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os }}-${{ matrix.arch }}-binary
-        path: ./Ordering
+        path: ./package/*
 
     - name: Package source
       run: |
