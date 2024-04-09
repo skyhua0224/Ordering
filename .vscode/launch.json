@@ -1,13 +1,14 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "C/C++ Runner: Debug Session",
-      "type": "lldb",
-      "request": "launch",
-      "args": [],
-      "cwd": "/Users/skyhua/Library/Mobile Documents/com~apple~CloudDocs/Coding/C/Ordering",
-      "program": "/Users/skyhua/Library/Mobile Documents/com~apple~CloudDocs/Coding/C/Ordering/build/Debug/outDebug"
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "lldb", // 使用LLDB
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build" // 设置当前工作目录为build目录
+        }
+    ]
 }

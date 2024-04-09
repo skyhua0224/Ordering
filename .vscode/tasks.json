@@ -1,18 +1,31 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "build",
-			"type": "shell",
-			"command": "gcc",
-			"args": [
-				"${file}",
-				"-lncurses"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
-		}
-	]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "CMake Build",
+            "command": "cmake --build \"${workspaceFolder}/build\"",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "cmake --build \"${workspaceFolder}/build\""
+            },
+            "osx": {
+                "command": "cd \"${workspaceFolder}/build\" && cmake .. && make"
+            },
+            "linux": {
+                "command": "cd \"${workspaceFolder}/build\" && cmake .. && make"
+            }
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: 测试",
+            "command": "test",
+            "problemMatcher": [],
+            "detail": "CMake 模板 测试 任务"
+        }
+    ]
 }
