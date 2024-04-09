@@ -37,7 +37,7 @@ jobs:
       run: cpack --config build/CPackSourceConfig.cmake
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os }}-package
         path: ./*.tar.gz
@@ -55,7 +55,7 @@ jobs:
       run: cpack --config build/CPackSourceConfig.cmake
 
     - name: Upload source artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: source-package
         path: ./*.tar.gz

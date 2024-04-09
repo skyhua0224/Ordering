@@ -18,9 +18,13 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/example_data/dish_info.txt ${CMAKE_CU
 set(CPACK_PACKAGE_NAME "Ordering")
 set(CPACK_PACKAGE_VENDOR "SkyHua Studio")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Ordering - A simple catering management system with features such as dish management, order management, payment, and receipt generation.")
-set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_VERSION "1.0.1")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Ordering")
 set(CPACK_SOURCE_IGNORE_FILES "/build/;${CPACK_SOURCE_IGNORE_FILES}")
+
+# 设置CPack包的文件名和源代码目录
+set(CPACK_PACKAGE_FILE_NAME "Ordering-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+set(CPACK_SOURCE_INSTALLED_DIRECTORIES "${CMAKE_SOURCE_DIR};/")
 
 # 包含CPack
 include(CPack)
