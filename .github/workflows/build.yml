@@ -94,14 +94,32 @@ jobs:
       with:
         path: artifacts
 
+    - name: Get latest release
+      id: latest_release
+      run: |
+        LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
+        if [[ "$LATEST_RELEASE" == "null" ]]; then
+          LATEST_RELEASE="1.0.0"
+        fi
+        echo "::set-output name=version::${LATEST_RELEASE}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Increment version
+      id: increment_version
+      run: |
+        LATEST_RELEASE=${{ steps.latest_release.outputs.version }}
+        VERSION=$(echo $LATEST_RELEASE | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
+        echo "::set-output name=version::${VERSION}"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ steps.increment_version.outputs.version }}
+        release_name: Release ${{ steps.increment_version.outputs.version }}
         draft: false
         prerelease: false
 
