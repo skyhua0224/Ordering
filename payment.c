@@ -9,9 +9,7 @@
 
 // clearInputBuffer函数，该函数用于清空输入缓冲区
 void clearInputBuffer() {
-    int c;
-    // 读取并丢弃输入缓冲区中的所有字符，直到遇到换行符或文件结束符
-    while ((c = getchar()) != '\n' && c != EOF) { }
+    while ((getchar()) != '\n');
 }
 
 // askPrintReceipt函数，该函数用于询问用户是否打印小票
