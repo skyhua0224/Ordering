@@ -53,6 +53,7 @@ jobs:
         fi
 
     - name: Build
+      shell: bash
       run: |
         cd build
         if [[ "${{ runner.os }}" == "Windows" ]]; then
@@ -62,6 +63,7 @@ jobs:
         fi
 
     - name: Package binary
+      shell: bash
       run: |
         mkdir package
         mv build/Ordering package/
