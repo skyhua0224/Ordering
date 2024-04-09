@@ -54,7 +54,7 @@ jobs:
         path: ./Ordering-*.tar.gz
 
     - name: Package source
-      run: cpack --config build/CPackSourceConfig.cmake
+      run: sudo cpack --config build/CPackSourceConfig.cmake
 
     - name: Upload source artifact
       uses: actions/upload-artifact@v3
