@@ -64,6 +64,7 @@ jobs:
         fi
 
     - name: Install dependencies
+      shell: bash
       run: |
         if [[ "${{ runner.os }}" == "Windows" ]]; then
           choco install 7zip.install
