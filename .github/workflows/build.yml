@@ -29,7 +29,6 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install dependencies
-      shell: bash
       run: |
         if [[ "${{ runner.os }}" == "Linux" ]]; then
           sudo apt-get install -y cmake g++
@@ -37,31 +36,21 @@ jobs:
           brew install cmake
         elif [[ "${{ runner.os }}" == "Windows" ]]; then
           choco install mingw --force
+          choco install 7zip.install
           echo "CMAKE_C_COMPILER=/mingw64/bin/gcc.exe" >> $GITHUB_ENV
           echo "CMAKE_CXX_COMPILER=/mingw64/bin/g++.exe" >> $GITHUB_ENV
         fi
 
     - name: Configure CMake
-      shell: bash
       run: |
         mkdir build
         cd build
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          echo "/mingw64/bin" >> $GITHUB_PATH
-          cmake .. -G "MinGW Makefiles"
-        else
-          cmake ..
-        fi
+        cmake ..
 
     - name: Build
-      shell: bash
       run: |
         cd build
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          mingw32-make
-        else
-          make
-        fi
+        make
 
     - name: Package binary
       shell: bash
@@ -70,7 +59,11 @@ jobs:
         mv build/Ordering package/
         cp example_data/order_info.txt package/
         cp example_data/dish_info.txt package/
-        zip -r ${{ matrix.os }}-${{ matrix.arch }}-binary.zip package/*
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          7z a -tzip ${{ matrix.os }}-${{ matrix.arch }}-binary.zip package/*
+        else
+          zip -r ${{ matrix.os }}-${{ matrix.arch }}-binary.zip package/*
+        fi
 
     - name: Upload binary artifact
       uses: actions/upload-artifact@v3
@@ -87,15 +80,10 @@ jobs:
       run: sudo apt-get install -y cmake g++
 
     - name: Configure CMake
-      shell: bash
       run: |
         mkdir build
         cd build
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          cmake .. -G "MinGW Makefiles" -DCMAKE_C_COMPILER=/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=/mingw64/bin/g++.exe
-        else
-          cmake ..
-        fi
+        cmake ..
 
     - name: Package source
       run: |
@@ -156,9 +144,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/ubuntu-latest-amd64-binary/ubuntu-latest-amd64-binary.zip
-        asset_name: ubuntu-latest-amd64-binary.zip
-        asset_content_type: application/zip
+        asset_path: ./artifacts/ubuntu-latest-amd64-binary/Ordering
+        asset_name: ubuntu-latest-amd64-binary
+        asset_content_type: application/octet-stream
 
     - name: Upload ubuntu-latest-arm64-binary
       uses: actions/upload-release-asset@v1
@@ -166,9 +154,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/ubuntu-latest-arm64-binary/ubuntu-latest-arm64-binary.zip
-        asset_name: ubuntu-latest-arm64-binary.zip
-        asset_content_type: application/zip
+        asset_path: ./artifacts/ubuntu-latest-arm64-binary/Ordering
+        asset_name: ubuntu-latest-arm64-binary
+        asset_content_type: application/octet-stream
 
     - name: Upload macos-latest-amd64-binary
       uses: actions/upload-release-asset@v1
@@ -176,9 +164,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/macos-latest-amd64-binary/macos-latest-amd64-binary.zip
-        asset_name: macos-latest-amd64-binary.zip
-        asset_content_type: application/zip
+        asset_path: ./artifacts/macos-latest-amd64-binary/Ordering
+        asset_name: macos-latest-amd64-binary
+        asset_content_type: application/octet-stream
 
     - name: Upload macos-latest-arm64-binary
       uses: actions/upload-release-asset@v1
@@ -186,9 +174,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/macos-latest-arm64-binary/macos-latest-arm64-binary.zip
-        asset_name: macos-latest-arm64-binary.zip
-        asset_content_type: application/zip
+        asset_path: ./artifacts/macos-latest-arm64-binary/Ordering
+        asset_name: macos-latest-arm64-binary
+        asset_content_type: application/octet-stream
 
     - name: Upload windows-latest-amd64-binary
       uses: actions/upload-release-asset@v1
@@ -206,9 +194,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/windows-latest-arm64-binary/windows-latest-arm64-binary.zip
-        asset_name: windows-latest-arm64-binary.zip
-        asset_content_type: application/zip
+        asset_path: ./artifacts/windows-latest-arm64-binary/Ordering.exe
+        asset_name: windows-latest-arm64-binary.exe
+        asset_content_type: application/octet-stream
 
     - name: Find source package
       id: find_source_package
