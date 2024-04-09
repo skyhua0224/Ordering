@@ -47,11 +47,20 @@ jobs:
         sudo cpack --config build/CPackConfig.cmake
         sudo mv build/package/*.tar.gz .
 
-    - name: Upload artifact
+    - name: Upload binary artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.os }}-${{ matrix.arch }}-package
-        path: ./*.tar.gz
+        name: ${{ matrix.os }}-${{ matrix.arch }}-binary
+        path: ./Ordering-*.tar.gz
+
+    - name: Package source
+      run: cpack --config build/CPackSourceConfig.cmake
+
+    - name: Upload source artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: source-package
+        path: ./Ordering-*-Source.tar.gz
 
   build-source:
     runs-on: ubuntu-latest
