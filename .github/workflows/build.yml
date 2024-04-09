@@ -44,8 +44,8 @@ jobs:
 
     - name: Package
       run: |
-        cpack --config build/CPackConfig.cmake
-        mv build/package/*.tar.gz .
+        sudo cpack --config build/CPackConfig.cmake
+        sudo mv build/package/*.tar.gz .
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
