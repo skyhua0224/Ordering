@@ -72,7 +72,9 @@ jobs:
       run: cmake -B build
 
     - name: Package source
-      run: cpack --config build/CPackSourceConfig.cmake
+      run: |
+        sudo cpack --config CPackSourceConfig.cmake
+        sudo mv Ordering-*-Source.tar.gz ..
 
     - name: Upload source artifact
       uses: actions/upload-artifact@v3
