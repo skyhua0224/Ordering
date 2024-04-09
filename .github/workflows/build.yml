@@ -47,7 +47,8 @@ jobs:
         mkdir build
         cd build
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          cmake .. -DCMAKE_C_COMPILER=/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=/mingw64/bin/g++.exe
+          echo "/mingw64/bin" >> $GITHUB_PATH
+          cmake .. -G "MinGW Makefiles"
         else
           cmake ..
         fi
