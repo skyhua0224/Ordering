@@ -45,12 +45,20 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          cmake .. -DCMAKE_C_COMPILER=/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=/mingw64/bin/g++.exe
+        else
+          cmake ..
+        fi
 
     - name: Build
       run: |
         cd build
-        make
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          mingw32-make
+        else
+          make
+        fi
 
     - name: Package binary
       run: |
