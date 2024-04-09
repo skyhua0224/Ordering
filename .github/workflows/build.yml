@@ -56,13 +56,28 @@ jobs:
         name: ${{ matrix.os }}-${{ matrix.arch }}-binary
         path: ./package/*
 
+  package-source:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: sudo apt-get install -y cmake g++
+
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+
     - name: Package source
       run: |
         cd build
         sudo cpack --config CPackSourceConfig.cmake
+        sudo mv Ordering-*-Source.tar.gz ..
 
     - name: Upload source artifact
       uses: actions/upload-artifact@v3
       with:
         name: source-package
-        path: ./build/Ordering-*-Source.tar.gz
+        path: ./*.tar.gz
