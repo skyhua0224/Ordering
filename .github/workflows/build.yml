@@ -20,6 +20,10 @@ jobs:
             arch: arm64
           - os: macos-latest
             arch: arm64
+          - os: windows-latest
+            arch: amd64
+          - os: windows-latest
+            arch: arm64
 
     steps:
     - uses: actions/checkout@v3
@@ -30,6 +34,10 @@ jobs:
           sudo apt-get install -y cmake g++
         elif [[ "${{ runner.os }}" == "macOS" ]]; then
           brew install cmake
+        elif [[ "${{ runner.os }}" == "Windows" ]]; then
+          choco install mingw --force
+          echo "CMAKE_C_COMPILER=/mingw64/bin/gcc.exe" >> $GITHUB_ENV
+          echo "CMAKE_CXX_COMPILER=/mingw64/bin/g++.exe" >> $GITHUB_ENV
         fi
 
     - name: Configure CMake
@@ -49,12 +57,13 @@ jobs:
         mv build/Ordering package/
         cp example_data/order_info.txt package/
         cp example_data/dish_info.txt package/
+        zip -r ${{ matrix.os }}-${{ matrix.arch }}-binary.zip package/*
 
     - name: Upload binary artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os }}-${{ matrix.arch }}-binary
-        path: ./package/*
+        path: ./${{ matrix.os }}-${{ matrix.arch }}-binary.zip
 
   package-source:
     runs-on: ubuntu-latest
@@ -129,9 +138,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/ubuntu-latest-amd64-binary/Ordering
-        asset_name: ubuntu-latest-amd64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/ubuntu-latest-amd64-binary/ubuntu-latest-amd64-binary.zip
+        asset_name: ubuntu-latest-amd64-binary.zip
+        asset_content_type: application/zip
 
     - name: Upload ubuntu-latest-arm64-binary
       uses: actions/upload-release-asset@v1
@@ -139,9 +148,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/ubuntu-latest-arm64-binary/Ordering
-        asset_name: ubuntu-latest-arm64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/ubuntu-latest-arm64-binary/ubuntu-latest-arm64-binary.zip
+        asset_name: ubuntu-latest-arm64-binary.zip
+        asset_content_type: application/zip
 
     - name: Upload macos-latest-amd64-binary
       uses: actions/upload-release-asset@v1
@@ -149,9 +158,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/macos-latest-amd64-binary/Ordering
-        asset_name: macos-latest-amd64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/macos-latest-amd64-binary/macos-latest-amd64-binary.zip
+        asset_name: macos-latest-amd64-binary.zip
+        asset_content_type: application/zip
 
     - name: Upload macos-latest-arm64-binary
       uses: actions/upload-release-asset@v1
@@ -159,9 +168,29 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifacts/macos-latest-arm64-binary/Ordering
-        asset_name: macos-latest-arm64-binary
-        asset_content_type: application/octet-stream
+        asset_path: ./artifacts/macos-latest-arm64-binary/macos-latest-arm64-binary.zip
+        asset_name: macos-latest-arm64-binary.zip
+        asset_content_type: application/zip
+
+    - name: Upload windows-latest-amd64-binary
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/windows-latest-amd64-binary/windows-latest-amd64-binary.zip
+        asset_name: windows-latest-amd64-binary.zip
+        asset_content_type: application/zip
+
+    - name: Upload windows-latest-arm64-binary
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/windows-latest-arm64-binary/windows-latest-arm64-binary.zip
+        asset_name: windows-latest-arm64-binary.zip
+        asset_content_type: application/zip
 
     - name: Find source package
       id: find_source_package
