@@ -86,10 +86,15 @@ jobs:
       run: sudo apt-get install -y cmake g++
 
     - name: Configure CMake
+      shell: bash
       run: |
         mkdir build
         cd build
-        cmake ..
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          cmake .. -G "MinGW Makefiles" -DCMAKE_C_COMPILER=/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=/mingw64/bin/g++.exe
+        else
+          cmake ..
+        fi
 
     - name: Package source
       run: |
