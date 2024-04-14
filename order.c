@@ -215,6 +215,7 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifPreOrder
     }
 
     // 让用户选择一个菜品
+    printf(CLEAR_SCREEN_ANSI);
     dishIndex = selectDishByCategory(categories[categoryChoice - 1]);
     if (dishIndex == -1) {
       continue;
