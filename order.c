@@ -102,9 +102,8 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifPreOrder
       }
 
       // 然后，将新的订单信息保存到order_info.txt文件中
-      orderInfoFile =
-          fopen("order_info.txt",
-                "a"); // 使用"a"模式打开文件，以便在文件末尾添加新的订单信息
+      orderInfoFile =fopen("order_info.txt","a"); 
+      // 使用"a"模式打开文件，以便在文件末尾添加新的订单信息
 
       // 获取当前时间
       time_t t = time(NULL);
@@ -112,7 +111,7 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifPreOrder
       char timeStr[64];
       strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H_%M_%S", tm);
 
-      fprintf(orderInfoFile, "\n%d %d %d %.2lf %d %s", tableNumber,
+      fprintf(orderInfoFile, "%d %d %d %.2lf %d %s\n", tableNumber,
               peopleNumber, orderCount, totalAmount, 0,
               timeStr); // 在新的一行中写入订单信息，其中0表示未支付
       fclose(orderInfoFile);
@@ -215,7 +214,6 @@ void placeOrder(int tableNumber, int peopleNumber, int isAddDish, int ifPreOrder
     }
 
     // 让用户选择一个菜品
-    printf(CLEAR_SCREEN_ANSI);
     dishIndex = selectDishByCategory(categories[categoryChoice - 1]);
     if (dishIndex == -1) {
       continue;
