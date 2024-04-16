@@ -33,6 +33,132 @@
 - `receipt.c`: 收据生成的实现。
 - `table.c`: 餐桌的实现。
 
+## 🛠 安装必要的工具
+
+在开始之前，你需要确保你的系统上已经安装了`wget`，`curl`和`unzip`。如果你的系统上还没有安装这些工具，你可以使用以下命令来安装：
+
+### 在Ubuntu上
+
+```sh
+sudo apt update
+sudo apt install wget curl unzip
+```
+
+### 在macOS上
+
+如果你使用的是Homebrew，你可以使用以下命令来安装：
+
+```sh
+brew install wget curl unzip
+```
+
+安装完这些工具后，你就可以开始下载并运行我们的项目了。
+
+## 🚀 下载并运行
+
+你可以直接从GitHub的release页面下载我们的项目的预编译版本。以下是在不同操作系统和不同架构上使用`wget`或`curl`下载，解压并运行的步骤：
+
+### 在Ubuntu上
+
+#### 对于amd64架构
+
+使用`wget`或`curl`下载最新的release：
+
+```sh
+wget https://github.com/skyhua0224/Ordering/releases/latest/download/ubuntu-latest-amd64-binary.zip
+```
+
+或者使用`curl`：
+
+```sh
+curl -LO https://github.com/skyhua0224/Ordering/releases/latest/download/ubuntu-latest-amd64-binary.zip
+```
+
+#### 对于arm64架构
+
+使用`wget`或`curl`下载最新的release：
+
+```sh
+wget https://github.com/skyhua0224/Ordering/releases/latest/download/ubuntu-latest-arm64-binary.zip
+```
+
+或者使用`curl`：
+
+```sh
+curl -LO https://github.com/skyhua0224/Ordering/releases/latest/download/ubuntu-latest-arm64-binary.zip
+```
+
+然后，使用`unzip`命令解压下载的文件，*处为所使用的架构：
+
+```sh
+unzip ubuntu-latest-*-binary.zip
+```
+
+最后，进入到解压出来的`package`目录，并运行程序：
+
+```sh
+cd package
+./Ordering
+```
+
+### 在macOS上
+
+#### 对于amd64（Intel）架构
+
+使用`wget`或`curl`下载最新的release：
+
+```sh
+wget https://github.com/skyhua0224/Ordering/releases/latest/download/macos-latest-amd64-binary.zip
+```
+
+或者使用`curl`：
+
+```sh
+curl -LO https://github.com/skyhua0224/Ordering/releases/latest/download/macos-latest-amd64-binary.zip
+```
+
+#### 对于arm64（Apple Silicon）架构
+
+使用`wget`或`curl`下载最新的release：
+
+```sh
+wget https://github.com/skyhua0224/Ordering/releases/latest/download/macos-latest-arm64-binary.zip
+```
+
+或者使用`curl`：
+
+```sh
+curl -LO https://github.com/skyhua0224/Ordering/releases/latest/download/macos-latest-arm64-binary.zip
+```
+
+然后，使用`unzip`命令解压下载的文件，*处为所使用的架构：
+
+```sh
+unzip macos-latest-*-binary.zip
+```
+
+最后，进入到解压出来的`package`目录，并运行程序：
+
+```sh
+cd package
+./Ordering
+```
+
+### 在Windows上
+
+首先，从以下链接下载最新的release：
+https://github.com/skyhua0224/Ordering/releases/latest/download/windows-latest-amd64-binary.zip
+
+然后，使用任何ZIP工具解压下载的文件。
+
+最后，进入到解压出来的`package`目录，并双击`Ordering.exe`运行程序。
+
+请注意，你可能需要给`Ordering`文件添加执行权限。你可以使用以下命令来添加执行权限：
+
+```sh
+chmod +x Ordering
+```
+
 
 ## 🔗 实体关系
 
@@ -43,6 +169,7 @@
 - **Customer-Order**：一个客户可以下多个订单，但一个订单只能由一个客户下，因此Customer和Order之间是一对多的关系。这部分主要在 `customer_menu.c` 和 `order.c` 中实现。
 
 这些实体和它们之间的关系构成了我们的餐饮管理系统的核心部分。
+
 
 ## 👨‍💻 编译
 
